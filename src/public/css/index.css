@@ -1,0 +1,101 @@
+body{
+    background-color: rgb(93, 93, 100);
+}
+
+html, body {
+  height: 100%; /* Asegura que ocupen toda la altura de la ventana */
+  margin: 0;    /* Elimina márgenes */
+  padding: 0;
+}
+
+/*Header*/
+.colornuevo {
+    background-color: rgb(3, 3, 3);
+    }
+  
+    .botoncabecera {
+      border: solid white 3px;
+    }
+    
+    .he {
+      padding: 3px;
+      margin: 3px;
+    }
+    
+    .he:hover {
+      background-color: white;
+      color: black;
+    }
+    
+    .he2 {
+      border: solid white 1px;
+    }
+    
+    .bhn {
+      border: solid black 2px;
+    }
+  
+  .ff{
+      display: flex;
+      justify-content: center;
+  }
+  
+  .styleButtonHead{
+    color: rgb(232, 235, 233);
+    background-color: rgb(48, 89, 79);
+    all: unset; 
+    display: inline-block; 
+    cursor: pointer; 
+  
+  }
+
+  .cabecera {
+    justify-content: center; /* Centra horizontalmente los elementos dentro de un flexbox */
+    background-color: transparent;
+    font-size: large;
+    color: rgb(232, 235, 233);
+    display: flex; /* Asegura el uso del flexbox */
+    text-align: center; /* Asegura el centrado del texto */
+}
+
+
+  /* footer */
+  .footerText {
+    text-decoration: none;
+    background-color: rgb(3, 3, 3);
+    color: rgb(232, 235, 233);
+    text-align: center;
+    transition: all 0.5s;
+  }
+  
+  .footerText:hover {
+    transform: scale(1.1);
+    color:rgb(232, 235, 233);
+  }
+  
+  footer {
+  
+    background-color: rgb(3, 3, 3);
+    color: rgb(232, 235, 233);
+    text-align: center;
+    margin-top: auto;
+  }
+  
+  .links {
+    font-size: 30px;
+    justify-content: center;
+  }
+  
+  .pp {
+    font-size: 20px;
+  }
+
+  .ppo {
+    font-size: 10px;
+  }
+
+  .wrapper {
+    min-height: 100%; /* Asegura que siempre cubra el 100% del alto de la ventana */
+    display: flex;
+    flex-direction: column; /* Organiza los hijos en una columna */
+}
