@@ -18,11 +18,10 @@ export const getFechas = async (req, res) => {
       const pool = await getConnection();
       await pool
         .request()
-        .input('IDFECHA', sql.Int, IDFECHA)
         .input('IDRUEDAFK', sql.Int, IDRUEDAFK)
         .query(
-          `INSERT INTO Fecha (IDFECHA , IDRUEDAFK) 
-           VALUES (@IDFECHA , @IDRUEDAFK)`
+          `INSERT INTO Fecha (IDRUEDAFK) 
+           VALUES (@IDRUEDAFK)`
         );
       res.status(201).send('Fecha creada exitosamente');
     } catch (error) {

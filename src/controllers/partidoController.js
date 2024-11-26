@@ -15,14 +15,13 @@ export const getPartidos = async (req,res) => {
 
 export const createPartido = async (req,res) => {
     try {
-        const { IDPARTIDO, FechaHoraEncuentro, IDFECHAFK,
+        const {FechaHoraEncuentro, IDFECHAFK,
              NROARBITROFK, DNIARBITROFK, 
             EquipoLocal, IdEquipoLocal, EquipoVisitante, 
             IdEquipoVisitante, NombreCancha, UbicCancha} = req.body
 
         const pool = await getConnection()
-        await pool.request()
-        .input('IDPARTIDO', sql.Int, IDPARTIDO)
+        await pool.request()  
         .input('FechaHoraEncuentro', sql.DateTime2, FechaHoraEncuentro)
         .input('IDFECHAFK', sql.Int, IDFECHAFK)
         .input('NROARBITROFK', sql.Int, NROARBITROFK)
@@ -33,10 +32,10 @@ export const createPartido = async (req,res) => {
         .input('IdEquipoVisitante', sql.Int, IdEquipoVisitante)
         .input('NombreCancha', sql.VarChar, NombreCancha)
         .input('UbicCancha', sql.VarChar, UbicCancha)
-        .query( `INSERT INTO Partido (IDPARTIDO, FechaHoraEncuentro,
+        .query( `INSERT INTO Partido (FechaHoraEncuentro,
             IDEFECHAFK, NROARBITROFK, DNIARBITROFK, EquipoLocal, IdEquipoLocal, 
             EquipoVisitante, IdEquipoVisitante,NombreCancha, UbicCancha) 
-            VALUES (@IDPARTIDO, @FechaHoraEncuentro, @IDFECHAFK, @NROARBITROFK, @DNIARBITROFK,
+            VALUES (@FechaHoraEncuentro, @IDFECHAFK, @NROARBITROFK, @DNIARBITROFK,
             @EquipoLocal, @IdEquipoLocal, @EquipoVisitante, @IdEquipoVisitante, @NombreCancha, @UbicCancha)`
             );
 
