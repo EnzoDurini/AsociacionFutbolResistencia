@@ -16,31 +16,27 @@ export const getEquipos = async (req, res) => {
 // Crear un nuevo equipo
 export const createEquipo = async (req, res) => {
   try {
-    const { Division, NombreEquipo, NombreDT, NombreRepresentante, IDCATEGORIAFK } = req.body;
-    const pool = await getConnection();
+      const { IdDivisionFK, NombreEquipo, NombreDT, NombreRepresentante, IDCATEGORIAFK } = req.body;
+      const pool = await getConnection();
+      const siguienteNumeroEquipo = (await pool.request().query(
+          'SELECT MAX(NROEQUIPO) + 1 AS Siguiente FROM Equipo'
+      )).recordset[0].Siguiente;
 
-    // Obtener el último número de equipo y calcular el siguiente
-    const ultimoNumeroEquipoResult = await pool.request().query(
-      'SELECT ISNULL(MAX(NROEQUIPO), 0) AS UltimoNumero FROM Equipo'
-    );
-    const siguienteNumeroEquipo = ultimoNumeroEquipoResult.recordset[0].UltimoNumero + 1;
-
-
-    await pool
-      .request()
-      .input('Division', sql.VarChar, Division)
-      .input('NombreEquipo', sql.VarChar, NombreEquipo)
-      .input('NombreDT', sql.VarChar, NombreDT)
-      .input('NombreRepresentante', sql.VarChar, NombreRepresentante)
-      .input('NROEQUIPO', sql.Int, siguienteNumeroEquipo)
-      .input('IDCATEGORIAFK', sql.Int, IDCATEGORIAFK)
-      .query(
-        'INSERT INTO Equipo (Division, NombreEquipo, NombreDT, NombreRepresentante, NROEQUIPO, IDCATEGORIAFK) VALUES (@Division, @NombreEquipo, @NombreDT, @NombreRepresentante, @NROEQUIPO, @IDCATEGORIAFK)'
-      );
-    res.status(201).send('Equipo creado exitosamente');
+      await pool.request()
+          .input('IdDivisionFK', sql.Int, IdDivisionFK)
+          .input('NombreEquipo', sql.VarChar, NombreEquipo)
+          .input('NombreDT', sql.VarChar, NombreDT)
+          .input('NombreRepresentante', sql.VarChar, NombreRepresentante)
+          .input('NROEQUIPO', sql.Int, siguienteNumeroEquipo)
+          .input('IDCATEGORIAFK', sql.Int, IDCATEGORIAFK)
+          .query(
+              `INSERT INTO Equipo (IdDivisionFK, NombreEquipo, NombreDT, NombreRepresentante, NROEQUIPO, IDCATEGORIAFK)
+               VALUES (@IdDivisionFK, @NombreEquipo, @NombreDT, @NombreRepresentante, @NROEQUIPO, @IDCATEGORIAFK)`
+          );
+      res.status(201).send('Equipo creado exitosamente');
   } catch (error) {
-    console.error('Error al crear equipo:', error.message);
-    res.status(500).send('Error al crear equipo');
+      console.error('Error al crear equipo:', error.message);
+      res.status(500).send('Error al crear equipo');
   }
 };
 
@@ -53,7 +49,7 @@ export const updateEquipo = async (req, res) => {
     await pool
       .request()
       .input('id', sql.Int, id)
-      .input('Division', sql.VarChar, Division)
+      .input('Division', sql.Int, Division)
       .input('NombreEquipo', sql.VarChar, NombreEquipo)
       .input('NombreDT', sql.VarChar, NombreDT)
       .input('NombrePresentante', sql.VarChar, NombrePresentante)

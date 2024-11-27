@@ -18,34 +18,26 @@ router.get('/', (req, res) => {
 //INSCRIPCION
 router.get('/inscripcion', async (req, res) => {
   try {
-    const pool = await getConnection();
+      const pool = await getConnection();
+      const divisionesResult = await pool.request().query('SELECT * FROM Division');
+      const categoriasResult = await pool.request().query('SELECT * FROM Categoria');
+      const equiposResult = await pool.request().query('SELECT * FROM Equipo');
+      const siguienteNumeroEquipo = (await pool.request().query(
+          'SELECT MAX(NROEQUIPO) + 1 AS Siguiente FROM Equipo'
+      )).recordset[0].Siguiente;
 
-    const ultNumeroEquipo = await pool.request().query(
-      `SELECT MAX(NROEQUIPO) AS max FROM Equipo`
-    )
-    const siguienteNumEquipo = ultNumeroEquipo.recordset[0].max + 1;
-
-    const equiposResult = await pool.request().query('SELECT NROEQUIPO, NombreEquipo FROM Equipo');
-
-
-    const jugadoresResult = await pool.request().query(
-      'SELECT DNIFK, NROSOCIO, NROEQUIPOFK, IDCATEGORIAFK FROM Jugador'
-    );
-
-    const categoriasResult = await pool.request().query(
-      'SELECT IDCATEGORIA, Categoria, DescCategoria FROM Categoria'
-    );
-    res.render('inscripcion', { 
-      equipos: equiposResult.recordset, 
-      categorias: categoriasResult.recordset,
-      jugadores: jugadoresResult.recordset,
-      siguienteNumEquipo: siguienteNumEquipo,
-    });
-  } catch (e) {
-    console.error('Error al cargar datos para inscripción:', e.message);
-    res.status(500).send('Error al cargar la vista de inscripciones');
+      res.render('inscripcion', {
+          divisiones: divisionesResult.recordset,
+          categorias: categoriasResult.recordset,
+          equipos: equiposResult.recordset,
+          siguienteNumEquipo: siguienteNumeroEquipo,
+      });
+  } catch (error) {
+      console.error('Error al cargar la vista de inscripción:', error.message);
+      res.status(500).send('Error interno');
   }
 });
+
 
 //Trae los equipos por ID de cateogira
 router.get('/equipos/categoria/:id', async (req, res) => {

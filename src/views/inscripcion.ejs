@@ -71,15 +71,14 @@
              <!-- Formulario para Inscripción de Equipos -->
               <form id="equipoForm" action="/equipos" method="post" style="display: none">
                 <h2>Inscripción de Equipo</h2>
-                <div>
-                  <label for="division">Division:</label>
-                  <select id="division" name="Division">
-                    <option value="">Selecciona una división</option>
-                    <option value="A"> División A</option>
-                    <option value="B"> División B</option>
-                    <option value="C"> División C</option>
-                  </select>
-                </div>
+                <select id="division" name="IdDivisionFK" required>
+                  <option value="">Selecciona una división</option>
+                  <% divisiones.forEach(division => { %>
+                      <option value="<%= division.IdDivision %>">
+                          <%= division.Division %>
+                      </option>
+                  <% }) %>
+              </select>
                 <div>
                   <label for="nombreEquipo">Nombre del Equipo: </label>
                   <input type="text" id="nombreEquipo" name="NombreEquipo" placeholder="Nombre del Equipo" required>

@@ -52,10 +52,10 @@ export const createJugador = async (req, res) => {
       .input('Foto', sql.VarBinary, Foto || null)
       .input('NROEQUIPOFK', sql.Int, NROEQUIPOFK)
       .input('IDCATEGORIAFK', sql.Int, IDCATEGORIAFK)
-      .input('NOMBREEQUIPOFK', sql.VarChar, NOMBREEQUIPOFK)
+ 
       .query(
-        `INSERT INTO Jugador (DNIFK, NROSOCIO, Foto, NROEQUIPOFK, IDCATEGORIAFK, NOMBREEQUIPOFK) 
-         VALUES (@DNIFK, @NROSOCIO, @Foto, @NROEQUIPOFK, @IDCATEGORIAFK, @NOMBREEQUIPOFK)`
+        `INSERT INTO Jugador (DNIFK, NROSOCIO, Foto, NROEQUIPOFK, IDCATEGORIAFK) 
+         VALUES (@DNIFK, @NROSOCIO, @Foto, @NROEQUIPOFK, @IDCATEGORIAFK)`
       );
 
     res.status(201).send('Jugador creado exitosamente');
