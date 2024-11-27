@@ -18,7 +18,7 @@ export const getArbitros = async (req, res) => {
 export const createArbitro = async (res,req) =>{
     try {
         const pool = await getConnection();
-        const {DNI, Nombre, Apellido, Direccion, FechaNacimiento, Telefono, nroarbitro,experiencia, tienecertificacion} = req.body
+        const {DNI, Nombre, Apellido, Direccion, FechaNacimiento, Telefono, experiencia, tienecertificacion} = req.body
     
         //Registro como Persona primero
         await pool.request()
@@ -35,12 +35,11 @@ export const createArbitro = async (res,req) =>{
         )
                 
         await pool.request()
-        .input('DNIFK',sql.Int, dni)
-        .input('NROARBITROFK',sql.NVarChar, nroarbitro)
+        .input('DNIFK',sql.Int, DNI)
         .input('Experiencia',sql.NVarChar, experiencia)
-        .input('TieneCertificacion',sql.NVarChar, tienecertificacion)
-        .query(`INSERT INTO Arbitro (DNIFK, NROARBITRO, Experiencia, TieneCertificacion ) 
-            VALUES (@DNIFK, @NROARBITRO, @Experiencia, @TieneCertificacion )`);
+        .input('TieneCertificacion',sql.Bit, tienecertificacion)
+        .query(`INSERT INTO Arbitro (DNIFK, Experiencia, TieneCertificacion ) 
+            VALUES (@DNIFK, @Experiencia, @TieneCertificacion )`);
         res.status(201).send('Arbitro creado exitosamente');
         } catch (error) {
             console.error('Error al crear arbitro:', error.message)
@@ -51,8 +50,7 @@ export const createArbitro = async (res,req) =>{
 export const updateArbitro = async (req,res) => {
     try {
         const {dni} = req.params
-        const {Nombre,Apellido, Direccion, FechaNacimiento, Telefono, 
-            nroarbitro, experiencia, tienecertificacion} = req.body
+        const {Nombre,Apellido, Direccion, FechaNacimiento, Telefono, experiencia, tienecertificacion} = req.body
         const pool = await getConnection();
 
         await pool.request()
@@ -74,13 +72,11 @@ export const updateArbitro = async (req,res) => {
 
         await pool.request()
       .input('DNIFK', sql.Int, dni) // Clave foránea a Persona
-      .input('NROARBITRO', sql.Int, nroarbitro)
       .input('Experiencia', sql.VarChar, experiencia)
       .input('TieneCertificacion', sql.Bit, tienecertificacion) // Manejo de valor booleano
       .query(
         `UPDATE Arbitro 
-         SET NROARBITRO = @NROARBITRO, 
-             Experiencia = @Experiencia, 
+         SET Experiencia = @Experiencia, 
              TieneCertificacion = @TieneCertificacion 
          WHERE DNIFK = @DNIFK`
       );

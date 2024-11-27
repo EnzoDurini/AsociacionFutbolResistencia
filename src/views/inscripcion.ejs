@@ -20,6 +20,7 @@
 
 <body>
   <div class="wrapper">
+
     <header class="container-fluid colornuevo">
       <nav class="navbar navbar-expand-lg transparent">
         <div class="container-fluid">
@@ -58,7 +59,147 @@
 
 
 
-    <h1>PUTO</h1>
+    <main>
+          <h1>Inscripción</h1>
+
+          <div>
+            <h3>Elige una opción:</h3>
+            <button type="button" onclick="botonForm('equipo')">Inscribir Equipo</button>
+            <button type="button" onclick="botonForm('jugador')">Inscribir Jugador</button>
+          </div>
+          
+             <!-- Formulario para Inscripción de Equipos -->
+              <form id="equipoForm" action="/equipos" method="post" style="display: none">
+                <h2>Inscripción de Equipo</h2>
+                <div>
+                  <label for="division">Division:</label>
+                  <select id="division" name="Division">
+                    <option value="">Selecciona una división</option>
+                    <option value="A"> División A</option>
+                    <option value="B"> División B</option>
+                    <option value="C"> División C</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="nombreEquipo">Nombre del Equipo: </label>
+                  <input type="text" id="nombreEquipo" name="NombreEquipo" placeholder="Nombre del Equipo" required>
+                </div>
+                <div>
+                  <label for="nombreDT">Nombre del Director Técnico:</label>
+                  <input type="text" id="nombreDT" name="NombreDT" placeholder="Director técnico" required>
+                </div>
+                <div>
+                  <label for="nombreRepresentante">Nombre del Representante</label>
+                  <input type="text" id="nombreRepresentante" name="NombreRepresentante" placeholder="Representante">
+                </div>
+                <div>
+                  <label for="nroEquipo">Número del Equipo:</label>
+                  <input 
+                    type="number" 
+                    id="nroEquipo" 
+                    name="NROEQUIPO" 
+                    value="<%= siguienteNumEquipo %>" 
+                    readonly
+                  >
+                </div>
+                <div>
+                  <label for="idCategoria">Categoría:</label>
+                  <select id="idCategoria" name="IDCATEGORIAFK" required>
+                    <option value="">Seleccionar categoría</option>
+                    <% categorias.forEach(categoria => { %>
+                      <option value="<%= categoria.IDCATEGORIA %>">
+                        <%= categoria.Categoria %> - <%= categoria.DescCategoria %>
+                      </option>
+                    <% }) %>
+                  </select>
+                </div>
+              
+                <button type="submit">Registrar Equipo</button>
+              </form>
+
+
+                    <!-- Formulario para Persona y Jugador-->
+                    <form id="jugadorForm" action="/jugadores" method="POST" style="display: none;">
+                      <h2>Inscripción de Jugador</h2>
+                    
+                      <!-- Datos personales -->
+                      <fieldset>
+                        <legend>Datos Personales</legend>
+                        <div>
+                          <label for="dni">DNI:</label>
+                          <input type="number" id="dni" name="DNI" placeholder="DNI" required>
+                        </div>
+                    
+                        <div>
+                          <label for="nombre">Nombre:</label>
+                          <input type="text" id="nombre" name="Nombre" placeholder="Nombre del jugador" required>
+                        </div>
+                    
+                        <div>
+                          <label for="apellido">Apellido:</label>
+                          <input type="text" id="apellido" name="Apellido" placeholder="Apellido del jugador" required>
+                        </div>
+                    
+                        <div>
+                          <label for="direccion">Dirección:</label>
+                          <input type="text" id="direccion" name="Direccion" placeholder="Dirección" required>
+                        </div>
+                    
+                        <div>
+                          <label for="fechaNacimiento">Fecha de Nacimiento:</label>
+                          <input type="date" id="fechaNacimiento" name="FechaNacimiento" required>
+                        </div>
+                    
+                        <div>
+                          <label for="telefono">Teléfono:</label>
+                          <input type="tel" id="telefono" name="Telefono" placeholder="Teléfono" required>
+                        </div>
+                      </fieldset>
+                    
+                      <!-- Información específica del jugador -->
+                      <fieldset>
+                        <legend>Información del Jugador</legend>
+                        <div>
+                          <label for="nroSocio">Número de Socio:</label>
+                          <input type="number" id="nroSocio" name="NROSOCIO" placeholder="Número de socio" required>
+                        </div>
+                    
+                        <div>
+                          <label for="foto">Foto:</label>
+                          <input type="file" id="foto" name="Foto" accept="image/*">
+                        </div>
+                      </fieldset>
+                    
+                      <!-- Relación con categoría y equipo -->
+                      <fieldset>
+                        <legend>Equipo y Categoría</legend>
+                        <div>
+                          <label for="categoria">Categoría:</label>
+                          <select id="categoria" name="IDCATEGORIAFK" required onchange="actualizarEquipos()">
+                            <option value="">Seleccionar categoría</option>
+                            <% categorias.forEach(categoria => { %>
+                              <option value="<%= categoria.IDCATEGORIA %>"><%= categoria.Categoria %></option>
+                            <% }) %>
+                          </select>
+                        </div>
+                    
+                        <div>
+                          <label for="equipo">Equipo:</label>
+                          <select id="equipo" name="NROEQUIPOFK" required>
+                            <option value="">Seleccionar equipo</option>
+                          </select>
+                        </div>
+                      </fieldset>
+                    
+                      <input type="hidden" id="nombreEquipoSeleccionado" name="NOMBREEQUIPOFK" />
+                    
+                      <button type="submit">Registrar Jugador</button>
+                    </form>
+                
+                    
+              
+
+    </main>
 
 
 
@@ -96,6 +237,46 @@
     crossorigin="anonymous"></script>
   <!-- Fonts -->
   <script src="https://kit.fontawesome.com/026c9a0387.js" crossorigin="anonymous"></script>
+  <script>
+    function botonForm(type){
+      document.getElementById('equipoForm').style.display = type === 'equipo' ? 'block': 'none';
+      document.getElementById('jugadorForm').style.display = type === 'jugador' ? 'block': 'none';
+
+    }
+  </script>
+  <script>
+
+async function actualizarEquipos() {
+                        const categoriaId = document.getElementById('categoria').value; 
+                        const equipoSelect = document.getElementById('equipo');
+                        const nombreEquipoInput = document.getElementById('nombreEquipoSeleccionado');
+                        equipoSelect.innerHTML = '<option value="">Seleccionar equipo</option>';
+                    
+                        if (categoriaId) {
+                          try {
+                            const response = await fetch(`/equipos/categoria/${categoriaId}`);
+                            const equipos = await response.json();
+                            equipos.forEach(equipo => {
+                              const option = document.createElement('option');
+                              option.value = equipo.NROEQUIPO;
+                              option.textContent = equipo.NombreEquipo;
+                              option.setAttribute('data-nombre', equipo.NombreEquipo);
+                              equipoSelect.appendChild(option);
+                            });
+                    
+                            equipoSelect.addEventListener('change', () => {
+                              const selectedOption = equipoSelect.options[equipoSelect.selectedIndex];
+                              nombreEquipoInput.value = selectedOption.getAttribute('data-nombre');
+                            });
+                    
+                          } catch (error) {
+                            console.error('Error al cargar equipos:', error);
+                          }
+                        }
+                      }
+
+
+  </script>
 </body>
 
 </html>

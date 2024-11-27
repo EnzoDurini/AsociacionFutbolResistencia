@@ -14,41 +14,59 @@ export const getJugadores = async (req, res) => {
 };
 
 //Registrar jugador
+export const createJugador = async (req, res) => {
+  try {
+    const pool = await getConnection();
 
-export const createJugador = async (res,req) =>{
-    try {
-        const pool = await getConnection();
-        const {DNI, Nombre, Apellido, Direccion, FechaNacimiento, Telefono, nrosocio, foto, nroequipo, idcategoria, nombreequipo} = req.body
-    
-        //Registro como Persona primero
-        await pool.request()
-        .input('DNI', sql.VarChar, DNI)
-        .input('Nombre', sql.VarChar, Nombre)
-        .input('Apellido', sql.VarChar, Apellido)
-        .input('Direccion', sql.VarChar, Direccion)
-        .input('FechaNacimiento', sql.Date, FechaNacimiento)
-        .input('Telefono', sql.VarChar, Telefono)
-        .query(
-            `INSERT INTO Persona (DNI, Nombre, Apellido, Direccion,
-            FechaNacimiento, Telefono) VALUES (@DNI, @Nombre, @Apellido, @Direccion,
-            @FechaNacimiento, @Telefono)`,
-        )
-                
-        await pool.request()
-        .input('DNIFK',sql.Int, DNI)
-        .input('NROSOCIO',sql.NVarChar, nrosocio)
-        .input('Foto',sql.NVarChar, foto)
-        .input('NROEQUIPOFK',sql.NVarChar, nroequipo)
-        .input('IDCATEGORIAFK',sql.NVarChar, idcategoria)
-        .input('NOMBREEQUIPOFK',sql.NVarChar, nombreequipo)
-        .query(`INSERT INTO Jugador (DNIFK, NROSOCIO, Foto, NROEQUIPOFK, IDCATEGORIAFK, NOMBREEQUIPOFK) 
-            VALUES (@DNIFK, @NROSOCIO, @FOTO, @NROEQUIPOFK, @IDCATEGORIAFK, @NOMBREEQUIPOFK)`);
-        res.status(201).send('Jugador creado exitosamente');
-        } catch (error) {
-            console.error('Error al crear jugador:', error.message)
-                res.status(500).send('Error al crear jugador');
-}
-}
+    const {
+      DNI,
+      Nombre,
+      Apellido,
+      Direccion,
+      FechaNacimiento,
+      Telefono,
+      NROSOCIO,
+      Foto,
+      NROEQUIPOFK,
+      IDCATEGORIAFK,
+      NOMBREEQUIPOFK,
+    } = req.body;
+
+    // Registro en la tabla Persona
+    await pool.request()
+      .input('DNI', sql.Int, DNI)
+      .input('Nombre', sql.VarChar, Nombre)
+      .input('Apellido', sql.VarChar, Apellido)
+      .input('Direccion', sql.VarChar, Direccion)
+      .input('FechaNacimiento', sql.Date, FechaNacimiento)
+      .input('Telefono', sql.BigInt, Telefono)
+      .query(
+        `INSERT INTO Persona (DNI, Nombre, Apellido, Direccion, FechaNacimiento, Telefono) 
+         VALUES (@DNI, @Nombre, @Apellido, @Direccion, @FechaNacimiento, @Telefono)`
+      );
+
+    // Registro en la tabla Jugador
+    await pool.request()
+      .input('DNIFK', sql.Int, DNI)
+      .input('NROSOCIO', sql.Int, NROSOCIO)
+      .input('Foto', sql.VarBinary, Foto || null)
+      .input('NROEQUIPOFK', sql.Int, NROEQUIPOFK)
+      .input('IDCATEGORIAFK', sql.Int, IDCATEGORIAFK)
+      .input('NOMBREEQUIPOFK', sql.VarChar, NOMBREEQUIPOFK)
+      .query(
+        `INSERT INTO Jugador (DNIFK, NROSOCIO, Foto, NROEQUIPOFK, IDCATEGORIAFK, NOMBREEQUIPOFK) 
+         VALUES (@DNIFK, @NROSOCIO, @Foto, @NROEQUIPOFK, @IDCATEGORIAFK, @NOMBREEQUIPOFK)`
+      );
+
+    res.status(201).send('Jugador creado exitosamente');
+  } catch (error) {
+    console.error('Error al crear jugador:', error.message);
+    res.status(500).send('Error al crear jugador');
+  }
+};
+
+  
+  
 
 export const updateJugador = async (req,res) => {
     try {
@@ -72,7 +90,7 @@ export const updateJugador = async (req,res) => {
         )
 
         await pool.request()
-        .input('dni',sql.NVarChar, dni)
+        .input('DNIFK',sql.NVarChar, dni)
         .input('nrosocio',sql.NVarChar, nrosocio)
         .input('foto',sql.NVarChar, foto)
         .input('nroequipo',sql.NVarChar, nroequipo)

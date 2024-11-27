@@ -16,18 +16,26 @@ export const getEquipos = async (req, res) => {
 // Crear un nuevo equipo
 export const createEquipo = async (req, res) => {
   try {
-    const { Division, NombreEquipo, NombreDT, NombrePresentante, NROEQUIPO, IDCATEGORIAFK } = req.body;
+    const { Division, NombreEquipo, NombreDT, NombreRepresentante, IDCATEGORIAFK } = req.body;
     const pool = await getConnection();
+
+    // Obtener el último número de equipo y calcular el siguiente
+    const ultimoNumeroEquipoResult = await pool.request().query(
+      'SELECT ISNULL(MAX(NROEQUIPO), 0) AS UltimoNumero FROM Equipo'
+    );
+    const siguienteNumeroEquipo = ultimoNumeroEquipoResult.recordset[0].UltimoNumero + 1;
+
+
     await pool
       .request()
       .input('Division', sql.VarChar, Division)
       .input('NombreEquipo', sql.VarChar, NombreEquipo)
       .input('NombreDT', sql.VarChar, NombreDT)
-      .input('NombrePresentante', sql.VarChar, NombrePresentante)
-      .input('NROEQUIPO', sql.Int, NROEQUIPO)
+      .input('NombreRepresentante', sql.VarChar, NombreRepresentante)
+      .input('NROEQUIPO', sql.Int, siguienteNumeroEquipo)
       .input('IDCATEGORIAFK', sql.Int, IDCATEGORIAFK)
       .query(
-        'INSERT INTO Equipo (Division, NombreEquipo, NombreDT, NombrePresentante, NROEQUIPO, IDCATEGORIAFK) VALUES (@Division, @NombreEquipo, @NombreDT, @NombrePresentante, @NROEQUIPO, @IDCATEGORIAFK)'
+        'INSERT INTO Equipo (Division, NombreEquipo, NombreDT, NombreRepresentante, NROEQUIPO, IDCATEGORIAFK) VALUES (@Division, @NombreEquipo, @NombreDT, @NombreRepresentante, @NROEQUIPO, @IDCATEGORIAFK)'
       );
     res.status(201).send('Equipo creado exitosamente');
   } catch (error) {

@@ -11,9 +11,6 @@ const dbConfig = {
     port: parseInt(process.env.DB_PORT, 10),
      options:{
         encrypt: true, // for azure
-        trustServerCertificate: true,
-        enableArithAbort: true,
-        trustedConnection: true,
      },};
 
 let pool
