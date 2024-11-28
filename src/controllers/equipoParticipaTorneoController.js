@@ -106,7 +106,7 @@ export const inscribirEquipoEnTorneo = async (req, res) => {
       `);
 
     if (resultado.recordset[0].Inscrito > 0) {
-      return res.status(400).json({ message: 'El equipo ya está inscrito en este torneo.' });
+      return res.status(400).json({ message: 'El equipo ya está inscripto en este torneo.' });
     }
 
     // Inscribir el equipo en el torneo
