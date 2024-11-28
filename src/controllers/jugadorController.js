@@ -8,55 +8,59 @@ export const getJugadores = async (req, res) => {
     const result = await pool.request().query('SELECT * FROM Jugador');
     res.json(result.recordset);
   } catch (error) {
-    console.error('Error al obtener equipos:', error.message);
-    res.status(500).send('Error al obtener equipos');
+    console.error('Error al obtener jugadores:', error.message);
+    res.status(500).send('Error al obtener jugadores');
   }
 };
 
-//Registrar jugador
+// Registrar jugador
 export const createJugador = async (req, res) => {
   try {
     const pool = await getConnection();
+    console.log('Datos recibidos:', req.body);
 
     const {
       DNI,
       Nombre,
       Apellido,
       Direccion,
-      FechaNacimiento,
       Telefono,
+      FechaNacimiento,
       NROSOCIO,
       Foto,
+      CATEGORIAFK, 
       NROEQUIPOFK,
-      IDCATEGORIAFK,
-      NOMBREEQUIPOFK,
     } = req.body;
 
-    // Registro en la tabla Persona
+    // Validación básica
+    if (!CATEGORIAFK || !NROEQUIPOFK) {
+      return res.status(400).send('Faltan datos obligatorios como la categoría o el equipo.');
+    }
+
+    // Insertar en Persona
     await pool.request()
       .input('DNI', sql.Int, DNI)
       .input('Nombre', sql.VarChar, Nombre)
       .input('Apellido', sql.VarChar, Apellido)
       .input('Direccion', sql.VarChar, Direccion)
-      .input('FechaNacimiento', sql.Date, FechaNacimiento)
       .input('Telefono', sql.BigInt, Telefono)
-      .query(
-        `INSERT INTO Persona (DNI, Nombre, Apellido, Direccion, FechaNacimiento, Telefono) 
-         VALUES (@DNI, @Nombre, @Apellido, @Direccion, @FechaNacimiento, @Telefono)`
-      );
+      .input('FechaNacimiento', sql.Date, FechaNacimiento)
+      .query(`
+        INSERT INTO Persona (DNI, Nombre, Apellido, Direccion, Telefono, FechaNacimiento) 
+        VALUES (@DNI, @Nombre, @Apellido, @Direccion, @Telefono, @FechaNacimiento)
+      `);
 
-    // Registro en la tabla Jugador
+    // Insertar en Jugador
     await pool.request()
       .input('DNIFK', sql.Int, DNI)
       .input('NROSOCIO', sql.Int, NROSOCIO)
       .input('Foto', sql.VarBinary, Foto || null)
+      .input('CATEGORIAFK', sql.VarChar, CATEGORIAFK)
       .input('NROEQUIPOFK', sql.Int, NROEQUIPOFK)
-      .input('IDCATEGORIAFK', sql.Int, IDCATEGORIAFK)
- 
-      .query(
-        `INSERT INTO Jugador (DNIFK, NROSOCIO, Foto, NROEQUIPOFK, IDCATEGORIAFK) 
-         VALUES (@DNIFK, @NROSOCIO, @Foto, @NROEQUIPOFK, @IDCATEGORIAFK)`
-      );
+      .query(`
+        INSERT INTO Jugador (DNIFK, NROSOCIO, Foto, CATEGORIAFK, NROEQUIPOFK) 
+        VALUES (@DNIFK, @NROSOCIO, @Foto, @CATEGORIAFK, @NROEQUIPOFK)
+      `);
 
     res.status(201).send('Jugador creado exitosamente');
   } catch (error) {
@@ -65,62 +69,94 @@ export const createJugador = async (req, res) => {
   }
 };
 
-  
-  
 
-export const updateJugador = async (req,res) => {
-    try {
-        const {dni} = req.params
-        const {Nombre,Apellido, Direccion, FechaNacimiento, Telefono, 
-            nrosocio, foto, nroequipo, idcategoria, nombreequipo} = req.body
-        const pool = await getConnection();
 
-        await pool.request()
-        .input('DNI', sql.VarChar, dni)
-        .input('Nombre', sql.VarChar, Nombre)
-        .input('Apellido', sql.VarChar, Apellido)
-        .input('Direccion', sql.VarChar, Direccion)
-        .input('FechaNacimiento', sql.Date, FechaNacimiento)
-        .input('Telefono', sql.VarChar, Telefono)
-        .query(
-            `UPDATE Persona 
-         SET Nombre = @Nombre, Apellido = @Apellido, Direccion = @Direccion, 
-             FechaNacimiento = @FechaNacimiento, Telefono = @Telefono 
-         WHERE DNI = @DNI`          
-        )
 
-        await pool.request()
-        .input('DNIFK',sql.NVarChar, dni)
-        .input('nrosocio',sql.NVarChar, nrosocio)
-        .input('foto',sql.NVarChar, foto)
-        .input('nroequipo',sql.NVarChar, nroequipo)
-        .input('idcategoria',sql.NVarChar, idcategoria)
-        .input('nombreequipo',sql.NVarChar, nombreequipo)
-        .query( `UPDATE Jugador 
-            SET NROSOCIO = @NROSOCIO, Foto = @Foto, NROEQUIPOFK = @NROEQUIPOFK, 
-                IDCATEGORIAFK = @IDCATEGORIAFK, NOMBREEQUIPOFK = @NOMBREEQUIPOFK 
-            WHERE DNIFK = @DNIFK`);
-        res.status(201).send('Jugador actualizado exitosamente');
 
-    } catch (error) {
-        console.error('Error al actualizar jugador', error.message);
-        res.status(500).send('Error al crear jugador')        
-    }
-}
+export const deleteJugador = async (req, res) => {
+  try {
+    const { dni } = req.params; // DNI del jugador a eliminar
+    const pool = await getConnection();
 
-//Eliminar un equipo
+    // Eliminar jugador de la tabla Jugador (clave foránea)
+    await pool
+      .request()
+      .input('DNI', sql.Int, dni)
+      .query('DELETE FROM Jugador WHERE DNIFK = @DNI');
 
-export const deleteJugador = async (req,res) => {
-    try {
-        const{dni} = req.params;
-        const pool = await getConnection();
-        await pool
-        .request()
-        .input('DNIFK',sql.Int, dni)
-        .query(`DELETE FROM Jugador WHERE DNIFK = @DNIFK`);
-        res.status(200).send('Jugador eliminado exitosamente')
-    } catch (error) {
-        console.error('Error al eliminar jugador', error.message);
-        res.status(500).send('Error al eliminar jugador')        
-    }
+    // Eliminar persona de la tabla Persona
+    await pool
+      .request()
+      .input('DNI', sql.Int, dni)
+      .query('DELETE FROM Persona WHERE DNI = @DNI');
+
+    res.status(200).send('Jugador eliminado exitosamente');
+  } catch (error) {
+    console.error('Error al eliminar jugador:', error.message);
+    res.status(500).send('Error al eliminar jugador');
+  }
+};
+
+
+
+export const updateJugador = async (req, res) => {
+  try {
+    const { dni } = req.params; // DNI del jugador a actualizar
+    const {
+      Nombre,
+      Apellido,
+      Direccion,
+      FechaNacimiento,
+      Telefono,
+      NROSOCIO,
+      Foto,
+      Categoria,
+      Equipo,
+    } = req.body; // Datos enviados en el cuerpo de la solicitud
+
+    const pool = await getConnection();
+
+    // Actualizar datos en la tabla Persona
+    await pool
+      .request()
+      .input('DNI', sql.Int, dni)
+      .input('Nombre', sql.VarChar, Nombre)
+      .input('Apellido', sql.VarChar, Apellido)
+      .input('Direccion', sql.VarChar, Direccion)
+      .input('FechaNacimiento', sql.Date, FechaNacimiento)
+      .input('Telefono', sql.BigInt, Telefono)
+      .query(`
+        UPDATE Persona
+        SET 
+          Nombre = @Nombre,
+          Apellido = @Apellido,
+          Direccion = @Direccion,
+          FechaNacimiento = @FechaNacimiento,
+          Telefono = @Telefono
+        WHERE DNI = @DNI
+      `);
+
+    // Actualizar datos en la tabla Jugador
+    await pool
+      .request()
+      .input('DNI', sql.Int, dni)
+      .input('NROSOCIO', sql.Int, NROSOCIO)
+      .input('Foto', sql.VarBinary, Foto || null)
+      .input('Equipo', sql.VarChar, Equipo)
+      .input('Categoria', sql.VarChar, Categoria)
+      .query(`
+        UPDATE Jugador
+        SET 
+          NROSOCIO = @NROSOCIO,
+          Foto = @Foto,
+          NROEQUIPOFK = (SELECT NROEQUIPO FROM Equipo WHERE NombreEquipo = @Equipo),
+          IDCATEGORIAFK = (SELECT Categoria FROM Categoria WHERE Categoria = @Categoria)
+        WHERE DNIFK = @DNI
+      `);
+
+    res.status(200).send('Jugador actualizado exitosamente');
+  } catch (error) {
+    console.error('Error al actualizar jugador:', error.message);
+    res.status(500).send('Error al actualizar jugador');
+  }
 };

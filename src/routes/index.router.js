@@ -3,10 +3,12 @@ import sql from 'mssql';
 import { createEquipo, deleteEquipo, getEquipos, updateEquipo } from '../controllers/equipoController.js';
 import {createJugador,deleteJugador,getJugadores,updateJugador} from '../controllers/jugadorController.js';
 import { createArbitro, deleteArbitro, getArbitros, updateArbitro } from '../controllers/arbitroController.js';
-import { createTorneo, deleteTorneo, getTorneos, updateTorneo } from '../controllers/torneoController.js';
 import { createPartido, deletePartido, getPartidos, updatePartido } from '../controllers/partidoController.js';
 import {createFecha, deleteFecha, getFechas, updateFecha} from '../controllers/fechaController.js';
 import { createRueda, deleteRueda, getRuedas, updateRueda} from '../controllers/ruedaController.js';
+import { createTorneo, getTorneos, updateTorneo, deleteTorneo, getTorneosPorCategoriaYDivision } from '../controllers/torneoController.js';
+import { createFixture, getFixtures, deleteFixture } from '../controllers/fixtureController.js';
+
 import { getConnection } from '../controllers/dbController.js';
 
 const router = Router()
@@ -40,14 +42,18 @@ router.get('/inscripcion', async (req, res) => {
 
 
 //Trae los equipos por ID de cateogira
-router.get('/equipos/categoria/:id', async (req, res) => {
+router.get('/equipos/categoria/:categoriaFK', async (req, res) => {
   try {
-    const { id } = req.params;
+    const { categoriaFK } = req.params;
     const pool = await getConnection();
 
     const equiposResult = await pool.request()
-      .input('idCategoria', sql.Int, id)
-      .query('SELECT NROEQUIPO, NombreEquipo FROM Equipo WHERE IDCATEGORIAFK = @idCategoria');
+      .input('categoriaFK', sql.VarChar, categoriaFK)
+      .query(`
+        SELECT NROEQUIPO, NombreEquipo 
+        FROM Equipo 
+        WHERE CATEGORIAFK = @categoriaFK
+      `);
 
     res.json(equiposResult.recordset);
   } catch (error) {
@@ -57,12 +63,25 @@ router.get('/equipos/categoria/:id', async (req, res) => {
 });
 
 
+//vista torneo
 
+router.get('/torneo', async (req, res) => {
+  try {
+    const pool = await getConnection();
+    const categoriasResult = await pool.request().query('SELECT * FROM Categoria');
+    const divisionesResult = await pool.request().query('SELECT * FROM Division');
 
-
-router.get('/torneo', (req, res) => {
-  res.render('torneo');
+    res.render('torneo', {
+      categorias: categoriasResult.recordset,
+      divisiones: divisionesResult.recordset, // Si también necesitas divisiones
+    });
+  } catch (error) {
+    console.error('Error al cargar la vista de torneo:', error.message);
+    res.status(500).send('Error interno al cargar la vista de torneo');
+  }
 });
+
+
 
 
 router.get('/fixture', (req, res) => {
@@ -113,6 +132,7 @@ router.get('/torneos', getTorneos)
 router.post('/torneos', createTorneo)
 router.put('/torneos/:id', updateTorneo)
 router.delete('/torneos/:id', deleteTorneo)
+router.get('/torneos/filtrar', getTorneosPorCategoriaYDivision)
 
 //FECHA
 router.get('/fechas', getFechas)
@@ -133,5 +153,8 @@ router.post('/partidos', createPartido)
 router.put('/partidos/:id', updatePartido)
 router.delete('/partidos/:id', deletePartido)
 
-
+// FIXTURES
+router.get('/fixtures', getFixtures);
+router.post('/fixtures', createFixture);
+router.delete('/fixtures/:id', deleteFixture);
 export default router;

@@ -19,10 +19,9 @@ export const getConnection = async() => {
     try {
         if (!pool)
             pool = await sql.connect(dbConfig);
-            console.log('Conexión existosa')
             return pool;
     } catch (error) {
-        console.log('Error al conectar a la base de datos', error);
+        console.error('Error al conectar a la base de datos', error);
         throw error
     }
 }
