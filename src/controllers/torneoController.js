@@ -1,114 +1,128 @@
 import { getConnection } from './dbController.js';
 import sql from 'mssql';
 
-// Crear torneo y fixture asociado
+// Crear torneo
 export const createTorneo = async (req, res) => {
   try {
-    const { NOMBRETORNEO, FechaInicioTorneo, FechaFinTorneo, FechaInicioInscripcion, FechaFinInscripcion, Division, Categoria } = req.body;
     console.log(req.body)
+    const {
+      NOMBRETORNEO,
+      FechaInicioTorneo,
+      FechaFinTorneo,
+      FechaInicioInscripcion,
+      FechaFinInscripcion,
+      DivisionFK,
+      CategoriaFK,
+    } = req.body;
+
+    // Validación básica
+    if (new Date(FechaInicioTorneo) > new Date(FechaFinTorneo)) {
+      return res.status(400).send('La fecha de inicio del torneo no puede ser posterior a la fecha de fin.');
+    }
+    if (new Date(FechaInicioInscripcion) > new Date(FechaFinInscripcion)) {
+      return res.status(400).send('La fecha de inicio de inscripción no puede ser posterior a la fecha de fin de inscripción.');
+    }
+
     const pool = await getConnection();
 
-    const siguienteTorneoID = (await pool.request().query(`
-      SELECT ISNULL(MAX(IDTORNEO), 0) + 10 AS SiguienteTorneoID FROM Torneo
-    `)).recordset[0].SiguienteTorneoID;
-
-    const siguienteFixtureID = (await pool.request().query(`
-      SELECT ISNULL(MAX(IdFixture), 0) + 100 AS SiguienteFixtureID FROM Fixture
-    `)).recordset[0].SiguienteFixtureID;
-
-    // Crear el torneo
+    // Insertar torneo en la base de datos
     await pool.request()
-      .input('IDTORNEO', sql.Int, siguienteTorneoID)
       .input('NOMBRETORNEO', sql.VarChar, NOMBRETORNEO)
       .input('FechaInicioTorneo', sql.Date, FechaInicioTorneo)
       .input('FechaFinTorneo', sql.Date, FechaFinTorneo)
       .input('FechaInicioInscripcion', sql.Date, FechaInicioInscripcion)
       .input('FechaFinInscripcion', sql.Date, FechaFinInscripcion)
+      .input('DivisionFK', sql.VarChar, DivisionFK)
+      .input('CategoriaFK', sql.VarChar, CategoriaFK)
       .query(`
-        INSERT INTO Torneo (IDTORNEO, NOMBRETORNEO, FechaInicioTorneo, FechaFinTorneo, FechaInicioInscripcion, FechaFinInscripcion)
-        VALUES (@IDTORNEO, @NOMBRETORNEO, @FechaInicioTorneo, @FechaFinTorneo, @FechaInicioInscripcion, @FechaFinInscripcion)
+        INSERT INTO Torneo 
+        (NOMBRETORNEO, FechaInicioTorneo, FechaFinTorneo, FechaInicioInscripcion, FechaFinInscripcion, DivisionFK, CategoriaFK)
+        VALUES (@NOMBRETORNEO, @FechaInicioTorneo, @FechaFinTorneo, @FechaInicioInscripcion, @FechaFinInscripcion, @DivisionFK, @CategoriaFK)
       `);
 
-    // Crear el fixture asociado
-    await pool.request()
-      .input('IdFixture', sql.Int, siguienteFixtureID)
-      .input('IdTorneoFK', sql.Int, siguienteTorneoID)
-      .input('Division', sql.VarChar, Division)
-      .input('Categoria', sql.VarChar, Categoria)
-      .query(`
-        INSERT INTO Fixture (IdFixture, IdTorneoFK, Division, Categoria)
-        VALUES (@IdFixture, @IdTorneoFK, @Division, @Categoria)
-      `);
-
-    res.status(201).send('Torneo y fixture creados exitosamente');
+    res.status(201).send('Torneo creado exitosamente.');
   } catch (error) {
-    console.error('Error al crear torneo y fixture:', error.message);
-    res.status(500).send('Error al crear torneo y fixture');
+    console.error('Error al crear torneo:', error.message);
+    res.status(500).send('Error al crear torneo.');
   }
 };
 
-
+// Eliminar torneo
 export const deleteTorneo = async (req, res) => {
   try {
     const { id } = req.params; // ID del torneo a eliminar
+
     const pool = await getConnection();
 
-    // Eliminar fixtures asociados al torneo
-    await pool
-      .request()
-      .input('IDTORNEO', sql.Int, id)
-      .query('DELETE FROM Fixture WHERE IdTorneoFK = @IDTORNEO');
-
-    // Eliminar el torneo
-    await pool
-      .request()
+    // Eliminar torneo por ID
+    await pool.request()
       .input('IDTORNEO', sql.Int, id)
       .query('DELETE FROM Torneo WHERE IDTORNEO = @IDTORNEO');
 
-    res.status(200).send('Torneo y sus fixtures asociados eliminados exitosamente');
+    res.status(200).send('Torneo eliminado exitosamente.');
   } catch (error) {
     console.error('Error al eliminar torneo:', error.message);
-    res.status(500).send('Error al eliminar torneo');
+    res.status(500).send('Error al eliminar torneo.');
   }
 };
 
+// Obtener todos los torneos
 export const getTorneos = async (req, res) => {
   try {
     const pool = await getConnection();
-    const result = await pool
-      .request()
-      .query('SELECT * FROM Torneo');
+
+    const result = await pool.request().query(`
+      SELECT 
+        IDTORNEO, 
+        NOMBRETORNEO, 
+        FechaInicioTorneo, 
+        FechaFinTorneo, 
+        FechaInicioInscripcion, 
+        FechaFinInscripcion, 
+        DivisionFK, 
+        CategoriaFK 
+      FROM Torneo
+    `);
 
     res.json(result.recordset);
   } catch (error) {
     console.error('Error al obtener torneos:', error.message);
-    res.status(500).send('Error al obtener torneos');
+    res.status(500).send('Error al obtener torneos.');
   }
 };
 
+// Obtener torneos por categoría y división
 export const getTorneosPorCategoriaYDivision = async (req, res) => {
   try {
-    const { categoria, division } = req.query; // Recibe parámetros de consulta
+    const { CategoriaFK, DivisionFK } = req.query;
 
     const pool = await getConnection();
-    const result = await pool
-      .request()
-      .input('Categoria', sql.VarChar, categoria)
-      .input('Division', sql.VarChar, division)
+
+    const result = await pool.request()
+      .input('CategoriaFK', sql.VarChar, CategoriaFK)
+      .input('DivisionFK', sql.VarChar, DivisionFK)
       .query(`
-        SELECT T.*
-        FROM Torneo T
-        JOIN Fixture F ON T.IDTORNEO = F.IdTorneoFK
-        WHERE F.IdCategoriaFK = @Categoria AND F.IdDivisionFK = @Division
+        SELECT 
+          IDTORNEO, 
+          NOMBRETORNEO, 
+          FechaInicioTorneo, 
+          FechaFinTorneo, 
+          FechaInicioInscripcion, 
+          FechaFinInscripcion, 
+          DivisionFK, 
+          CategoriaFK 
+        FROM Torneo
+        WHERE CategoriaFK = @CategoriaFK AND DivisionFK = @DivisionFK
       `);
 
     res.json(result.recordset);
   } catch (error) {
-    console.error('Error al obtener torneos por categoría y división:', error.message);
-    res.status(500).send('Error al obtener torneos por categoría y división');
+    console.error('Error al filtrar torneos por categoría y división:', error.message);
+    res.status(500).send('Error al filtrar torneos.');
   }
 };
 
+// Actualizar torneo
 export const updateTorneo = async (req, res) => {
   try {
     const { id } = req.params; // ID del torneo a actualizar
@@ -118,32 +132,37 @@ export const updateTorneo = async (req, res) => {
       FechaFinTorneo,
       FechaInicioInscripcion,
       FechaFinInscripcion,
+      DivisionFK,
+      CategoriaFK,
     } = req.body;
 
     const pool = await getConnection();
 
-    await pool
-      .request()
+    await pool.request()
       .input('IDTORNEO', sql.Int, id)
       .input('NOMBRETORNEO', sql.VarChar, NOMBRETORNEO)
       .input('FechaInicioTorneo', sql.Date, FechaInicioTorneo)
       .input('FechaFinTorneo', sql.Date, FechaFinTorneo)
       .input('FechaInicioInscripcion', sql.Date, FechaInicioInscripcion)
       .input('FechaFinInscripcion', sql.Date, FechaFinInscripcion)
+      .input('DivisionFK', sql.VarChar, DivisionFK)
+      .input('CategoriaFK', sql.VarChar, CategoriaFK)
       .query(`
         UPDATE Torneo
-        SET
+        SET 
           NOMBRETORNEO = @NOMBRETORNEO,
           FechaInicioTorneo = @FechaInicioTorneo,
           FechaFinTorneo = @FechaFinTorneo,
           FechaInicioInscripcion = @FechaInicioInscripcion,
-          FechaFinInscripcion = @FechaFinInscripcion
+          FechaFinInscripcion = @FechaFinInscripcion,
+          DivisionFK = @DivisionFK,
+          CategoriaFK = @CategoriaFK
         WHERE IDTORNEO = @IDTORNEO
       `);
 
-    res.status(200).send('Torneo actualizado exitosamente');
+    res.status(200).send('Torneo actualizado exitosamente.');
   } catch (error) {
     console.error('Error al actualizar torneo:', error.message);
-    res.status(500).send('Error al actualizar torneo');
+    res.status(500).send('Error al actualizar torneo.');
   }
 };

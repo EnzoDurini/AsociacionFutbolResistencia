@@ -8,6 +8,7 @@ import {createFecha, deleteFecha, getFechas, updateFecha} from '../controllers/f
 import { createRueda, deleteRueda, getRuedas, updateRueda} from '../controllers/ruedaController.js';
 import { createTorneo, getTorneos, updateTorneo, deleteTorneo, getTorneosPorCategoriaYDivision } from '../controllers/torneoController.js';
 import { createFixture, getFixtures, deleteFixture } from '../controllers/fixtureController.js';
+import { getEquipoByName, verificarInscripcion, inscribirEquipoEnTorneo} from '../controllers/equipoParticipaTorneoController.js';
 
 import { getConnection } from '../controllers/dbController.js';
 
@@ -70,10 +71,12 @@ router.get('/torneo', async (req, res) => {
     const pool = await getConnection();
     const categoriasResult = await pool.request().query('SELECT * FROM Categoria');
     const divisionesResult = await pool.request().query('SELECT * FROM Division');
+    const torneosResult = await pool.request().query('SELECT * FROM Torneo');
 
     res.render('torneo', {
       categorias: categoriasResult.recordset,
-      divisiones: divisionesResult.recordset, // Si también necesitas divisiones
+      divisiones: divisionesResult.recordset,
+      torneos: torneosResult.recordset, // Agregar torneos si es necesario
     });
   } catch (error) {
     console.error('Error al cargar la vista de torneo:', error.message);
@@ -81,6 +84,47 @@ router.get('/torneo', async (req, res) => {
   }
 });
 
+
+//Inscripcion de equipos en torneo
+router.post('/torneos/:id/inscribirEquipo', async (req, res) => {
+  try {
+    const { id } = req.params; // ID del torneo
+    const { NROEQUIPO, Division, Categoria } = req.body;
+
+    const pool = await getConnection();
+
+    // Verificar si el equipo cumple con la categoría y división
+    const equipoValido = await pool.request()
+      .input('NROEQUIPO', sql.Int, NROEQUIPO)
+      .input('Division', sql.VarChar, Division)
+      .input('Categoria', sql.VarChar, Categoria)
+      .query(`
+        SELECT 1 
+        FROM Equipo 
+        WHERE NROEQUIPO = @NROEQUIPO 
+          AND DivisionFK = @Division 
+          AND CategoriaFK = @Categoria
+      `);
+
+    if (equipoValido.recordset.length === 0) {
+      return res.status(400).json({ message: 'El equipo no cumple con la categoría o división del torneo.' });
+    }
+
+    // Inscribir al equipo en el torneo
+    await pool.request()
+      .input('IDTORNEO', sql.Int, id)
+      .input('NROEQUIPO', sql.Int, NROEQUIPO)
+      .query(`
+        INSERT INTO InscripcionTorneo (IDTORNEO, NROEQUIPO)
+        VALUES (@IDTORNEO, @NROEQUIPO)
+      `);
+
+    res.status(201).json({ message: 'Equipo inscrito exitosamente.' });
+  } catch (error) {
+    console.error('Error al inscribir equipo en torneo:', error.message);
+    res.status(500).json({ message: 'Error al inscribir equipo en el torneo.' });
+  }
+});
 
 
 
@@ -157,4 +201,17 @@ router.delete('/partidos/:id', deletePartido)
 router.get('/fixtures', getFixtures);
 router.post('/fixtures', createFixture);
 router.delete('/fixtures/:id', deleteFixture);
+
+
+
+router.get('/equipos/nombre/:nombre', getEquipoByName);
+router.post('/torneos/verificarInscripcion', verificarInscripcion);
+router.post('/torneos/inscribirEquipo', inscribirEquipoEnTorneo);
+
+
+
+
+
+
+
 export default router;
