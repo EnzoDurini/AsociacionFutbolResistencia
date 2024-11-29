@@ -63,6 +63,9 @@
       <table class="table table-striped mt-4">
         <thead>
           <tr>
+            <th>Torneo</th>
+            <th>Rueda</th>
+            <th>Fecha</th>
             <th>Equipo Local</th>
             <th>Equipo Visitante</th>
             <th>Fecha/Hora</th>
@@ -75,6 +78,9 @@
         <tbody>
           <% partidos.forEach(partido => { %>
             <tr>
+              <td><%= partido.NombreTorneo %></td>
+              <td><%= partido.NombreRueda %></td>
+              <td><%= partido.NumeroFecha %></td>
               <td><%= partido.EquipoLocal %></td>
               <td><%= partido.EquipoVisitante %></td>
               <td>
@@ -105,6 +111,9 @@
               </td>
               <td>
                 <button class="btn btn-success" onclick="updatePartido(<%= partido.IDPARTIDO %>)">Guardar</button>
+              </td>
+              <td>
+                <a href="/encuentro/<%= partido.IDPARTIDO %>" class="btn btn-info">Resultados</a>
               </td>
             </tr>
           <% }); %>

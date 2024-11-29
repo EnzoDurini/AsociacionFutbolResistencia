@@ -62,7 +62,7 @@ export const createJugador = async (req, res) => {
         VALUES (@DNIFK, @NROSOCIO, @Foto, @CATEGORIAFK, @NROEQUIPOFK)
       `);
 
-    res.status(201).send('Jugador creado exitosamente');
+    res.redirect('/inscripcion');
   } catch (error) {
     console.error('Error al crear jugador:', error.message);
     res.status(500).send('Error al crear jugador');

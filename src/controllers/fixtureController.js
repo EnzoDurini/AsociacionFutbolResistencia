@@ -160,10 +160,6 @@ export const getFixture = async (req, res) => {
 };
 
 
-export const getFixtureDetails = async (req, res) => {
-  
-};
-
 
 export const renderFixturePage = async (req, res) => {
   try {
@@ -171,7 +167,16 @@ export const renderFixturePage = async (req, res) => {
 
     // Obtener todos los fixtures
     const fixturesResult = await pool.request().query(`
-      SELECT F.IdFixture, F.NombreFixture FROM Fixture F
+      SELECT 
+        F.IdFixture, 
+        F.NombreFixture, 
+        T.NOMBRETORNEO, 
+        C.Categoria, 
+        D.Division
+      FROM Fixture F
+      INNER JOIN Torneo T ON F.IdTorneoFK = T.IDTORNEO
+      INNER JOIN Categoria C ON T.CategoriaFK = C.Categoria
+      INNER JOIN Division D ON T.DivisionFK = D.Division
     `);
 
     // Obtener todos los torneos
@@ -181,7 +186,7 @@ export const renderFixturePage = async (req, res) => {
 
     res.render('fixture', {
       fixtures: fixturesResult.recordset || [],
-      torneos: torneosResult.recordset || [], // Aquí enviamos los torneos a la vista
+      torneos: torneosResult.recordset || [],
     });
   } catch (error) {
     console.error('Error al obtener fixtures y torneos:', error.message);

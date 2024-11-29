@@ -3,7 +3,7 @@ import sql from 'mssql';
 import { createEquipo, deleteEquipo, getEquipos, updateEquipo } from '../controllers/equipoController.js';
 import {createJugador,deleteJugador,getJugadores,updateJugador} from '../controllers/jugadorController.js';
 import { createArbitro, deleteArbitro, getArbitros, updateArbitro, getArbitrosNombre } from '../controllers/arbitroController.js';
-import { createupdatePartido, getPartidos, updatePartido} from '../controllers/partidoController.js';
+import { createupdatePartido, getPartidosyJugadores, updatePartido, guardarResultadosEncuentro,marcarAusencia} from '../controllers/partidoController.js';
 import {createFecha, deleteFecha, getFechas, updateFecha} from '../controllers/fechaController.js';
 import { createRueda, deleteRueda, getRuedas, updateRueda} from '../controllers/ruedaController.js';
 import { createTorneo, getTorneos, updateTorneo, deleteTorneo, getTorneosPorCategoriaYDivision } from '../controllers/torneoController.js';
@@ -50,19 +50,27 @@ router.get('/encuentros', async (req, res) => {
     // Obtener los partidos
     const resultPartidos = await pool.request().query(`
       SELECT 
-        P.IDPARTIDO, 
-        P.FechaHoraEncuentro, 
-        P.NombreCancha, 
-        P.UbicCancha,
-        P.DNIARBITROFK,
-        EL.NombreEquipo AS EquipoLocal, 
-        EV.NombreEquipo AS EquipoVisitante,
-        CONCAT(PER.Nombre, ' ', PER.Apellido) AS NombreArbitro
-      FROM Partido P
-      LEFT JOIN Equipo EL ON P.IdEquipoLocal = EL.NROEQUIPO
-      LEFT JOIN Equipo EV ON P.IdEquipoVisitante = EV.NROEQUIPO
-      LEFT JOIN Arbitro A ON P.DNIARBITROFK = A.DNIFK
-      LEFT JOIN Persona PER ON A.DNIFK = PER.DNI
+    P.IDPARTIDO, 
+    P.FechaHoraEncuentro, 
+    P.NombreCancha, 
+    P.UbicCancha,
+    P.DNIARBITROFK,
+    EL.NombreEquipo AS EquipoLocal, 
+    EV.NombreEquipo AS EquipoVisitante,
+    CONCAT(PER.Nombre, ' ', PER.Apellido) AS NombreArbitro,
+    T.NOMBRETORNEO AS NombreTorneo,
+    R.NombreRueda AS NombreRueda,
+    F.NroFecha AS NumeroFecha
+FROM Partido P
+LEFT JOIN Equipo EL ON P.IdEquipoLocal = EL.NROEQUIPO
+LEFT JOIN Equipo EV ON P.IdEquipoVisitante = EV.NROEQUIPO
+LEFT JOIN Arbitro A ON P.DNIARBITROFK = A.DNIFK
+LEFT JOIN Persona PER ON A.DNIFK = PER.DNI
+LEFT JOIN Fecha F ON P.NroFechaFK = F.IdFecha
+LEFT JOIN Rueda R ON F.IdRuedaFK = R.IdRueda
+LEFT JOIN Fixture Fi ON R.IdFixtureFK = Fi.IdFixture
+LEFT JOIN Torneo T ON Fi.IdTorneoFK = T.IDTORNEO
+      
     `);
 
     const partidos = resultPartidos.recordset;
@@ -219,13 +227,15 @@ router.delete('/ruedas/:id', deleteRueda)
 //PARTIDO
 router.post('/partidos', createupdatePartido)
 router.post('/partido/update', updatePartido);
-
-
+router.get('/encuentro/:id', getPartidosyJugadores);
+router.post('/encuentro/guardar', guardarResultadosEncuentro)
+router.post('/encuentro/ausencia', marcarAusencia);
 // FIXTURES
 
 router.get('/fixture', renderFixturePage);
 router.post('/fixtures/generate', generateFixture);
 router.get('/fixtures/detalle/:id', getFixture);
+
 
 
 

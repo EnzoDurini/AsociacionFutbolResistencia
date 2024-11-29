@@ -92,14 +92,19 @@
             <tr>
               <th>ID</th>
               <th>Nombre del Fixture</th>
+              <th>Categoría</th>
+              <th>División</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
             <% fixtures.forEach(fixture => { %>
               <tr>
+
                 <td><%= fixture.IdFixture %></td>
                 <td><%= fixture.NombreFixture %></td>
+                <td><%= fixture.Categoria %></td>
+                <td><%= fixture.Division %></td>
                 <td>
                   <a href="/fixtures/detalle/<%= fixture.IdFixture %>" class="btn btn-success btnDesign">Modificar</a>
                 </td>
