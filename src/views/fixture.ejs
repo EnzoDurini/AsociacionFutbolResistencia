@@ -56,10 +56,64 @@
       </nav>
     </header>
 
-
-
-    <h1>PUTO 3</h1>
-
+    <main>
+    <div class="container mt-5">
+      <h1 class="text-center">Gestión de Fixtures</h1>
+  
+      <!-- Botón para mostrar el formulario de generar fixture -->
+      <div class="text-center mt-4">
+        <button class="btn btn-primary" id="btnMostrarForm">Generar Fixture</button>
+      </div>
+  
+      <!-- Formulario para generar fixture (oculto por defecto) -->
+      <div id="formGenerarFixture" class="mt-4" style="display: none;">
+        <form id="generarFixtureForm" method="POST" action="/fixtures/generate">
+          <div class="mb-3">
+            <label for="idTorneo" class="form-label">Selecciona el Torneo</label>
+            <select id="idTorneo" name="idTorneo" class="form-select" required>
+              <% torneos.forEach(torneo => { %>
+                <option value="<%= torneo.IDTORNEO %>"><%= torneo.NOMBRETORNEO %></option>
+              <% }); %>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="nroRuedas" class="form-label">Número de Ruedas</label>
+            <input type="number" id="nroRuedas" name="nroRuedas" class="form-control" required min="1" value="1">
+          </div>
+          <button type="submit" class="btn btn-success">Generar Fixture</button>
+        </form>
+      </div>
+  
+      <!-- Tabla de fixtures -->
+      <h2 class="mt-5">Lista de Fixtures</h2>
+      <% if (fixtures && fixtures.length > 0) { %>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre del Fixture</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% fixtures.forEach(fixture => { %>
+              <tr>
+                <td><%= fixture.IdFixture %></td>
+                <td><%= fixture.NombreFixture %></td>
+                <td>
+                  <a href="/fixtures/detalle/<%= fixture.IdFixture %>" class="btn btn-info">Modificar</a>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      <% } else { %>
+        <div class="alert alert-warning">No hay fixtures disponibles.</div>
+      <% } %>
+    </div>
+    
+    
+</main>
 
     <footer class="container-fluid">
       <div class="row">
@@ -96,6 +150,58 @@
     crossorigin="anonymous"></script>
   <!-- Fonts -->
   <script src="https://kit.fontawesome.com/026c9a0387.js" crossorigin="anonymous"></script>
+
+<!-- Codigos necesarios  -->
+<script>
+
+    document.getElementById('btnMostrarForm').addEventListener('click', () => {
+      const form = document.getElementById('formGenerarFixture');
+      form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    });
+ 
+  // Enviar solicitud para generar fixture
+  document.getElementById('generarFixtureForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const idTorneo = document.getElementById('idTorneo').value;
+    const nroRuedas = document.getElementById('nroRuedas').value;
+
+    try {
+      const response = await fetch('/fixtures/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idTorneo, nroRuedas }),
+      });
+
+      if (response.ok) {
+        alert('Fixture generado exitosamente.');
+        location.reload(); // Recargar la página para mostrar el nuevo fixture
+      } else {
+        const error = await response.text();
+        alert(`Error: ${error}`);
+      }
+    } catch (err) {
+      alert('Error interno al generar el fixture.');
+      console.error(err);
+    }
+  });
+
+  // Ver detalles de un fixture
+  async function verDetalleFixture(idFixture) {
+    try {
+      const response = await fetch(`/fixtures/${idFixture}`);
+      const detalle = await response.json();
+
+      console.log('Detalle del Fixture:', detalle);
+      alert('Ver consola para más detalles.');
+    } catch (err) {
+      alert('Error al obtener los detalles del fixture.');
+      console.error(err);
+    }
+  }
+</script>
+
+
 </body>
 
 </html>

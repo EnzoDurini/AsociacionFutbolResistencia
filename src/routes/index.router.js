@@ -3,11 +3,11 @@ import sql from 'mssql';
 import { createEquipo, deleteEquipo, getEquipos, updateEquipo } from '../controllers/equipoController.js';
 import {createJugador,deleteJugador,getJugadores,updateJugador} from '../controllers/jugadorController.js';
 import { createArbitro, deleteArbitro, getArbitros, updateArbitro } from '../controllers/arbitroController.js';
-import { createPartido, deletePartido, getPartidos, updatePartido } from '../controllers/partidoController.js';
+import { createupdatePartido, updatePartido} from '../controllers/partidoController.js';
 import {createFecha, deleteFecha, getFechas, updateFecha} from '../controllers/fechaController.js';
 import { createRueda, deleteRueda, getRuedas, updateRueda} from '../controllers/ruedaController.js';
 import { createTorneo, getTorneos, updateTorneo, deleteTorneo, getTorneosPorCategoriaYDivision } from '../controllers/torneoController.js';
-import { createFixture, getFixtures, deleteFixture } from '../controllers/fixtureController.js';
+import { generateFixture,getFixtureDetails, getFixture, renderFixturePage} from '../controllers/fixtureController.js';
 import { getEquipoByName, verificarInscripcion, inscribirEquipoEnTorneo} from '../controllers/equipoParticipaTorneoController.js';
 
 import { getConnection } from '../controllers/dbController.js';
@@ -42,6 +42,27 @@ router.get('/inscripcion', async (req, res) => {
 });
 
 
+//vista torneo
+
+
+
+router.get('/encuentros', (req, res) => {
+  res.render('encuentros');
+});
+
+
+router.get('/resultados', (req, res) => {
+  res.render('resultados');
+});
+
+//EQUIPO
+router.get('/equipos', getEquipos)
+
+router.post('/equipos',createEquipo)
+
+router.put('/equipos/:id', updateEquipo)
+
+router.delete('/equipos/:id', deleteEquipo)
 //Trae los equipos por ID de cateogira
 router.get('/equipos/categoria/:categoriaFK', async (req, res) => {
   try {
@@ -64,8 +85,30 @@ router.get('/equipos/categoria/:categoriaFK', async (req, res) => {
 });
 
 
-//vista torneo
+//JUGADOR
+router.get('/jugadores', getJugadores)
 
+router.post('/jugadores',createJugador)
+
+router.put('/jugadores/:dni', updateJugador)
+
+router.delete('/jugadores/:dni', deleteJugador)
+
+//ARBITRO
+router.get('/arbitros', getArbitros)
+
+router.post('/arbitros',createArbitro)
+
+router.put('/arbitros/:id', updateArbitro)
+
+router.delete('/arbitros/:id', deleteArbitro)
+
+//TORNEO
+router.get('/torneos', getTorneos)
+router.post('/torneos', createTorneo)
+router.put('/torneos/:id', updateTorneo)
+router.delete('/torneos/:id', deleteTorneo)
+router.get('/torneos/filtrar', getTorneosPorCategoriaYDivision)
 router.get('/torneo', async (req, res) => {
   try {
     const pool = await getConnection();
@@ -83,8 +126,6 @@ router.get('/torneo', async (req, res) => {
     res.status(500).send('Error interno al cargar la vista de torneo');
   }
 });
-
-
 //Inscripcion de equipos en torneo
 router.post('/torneos/:id/inscribirEquipo', async (req, res) => {
   try {
@@ -126,58 +167,6 @@ router.post('/torneos/:id/inscribirEquipo', async (req, res) => {
   }
 });
 
-
-
-router.get('/fixture', (req, res) => {
-  res.render('fixture');
-});
-
-
-
-router.get('/encuentros', (req, res) => {
-  res.render('encuentros');
-});
-
-
-router.get('/resultados', (req, res) => {
-  res.render('resultados');
-});
-
-//EQUIPO
-router.get('/equipos', getEquipos)
-
-router.post('/equipos',createEquipo)
-
-router.put('/equipos/:id', updateEquipo)
-
-router.delete('/equipos/:id', deleteEquipo)
-
-
-//JUGADOR
-router.get('/jugadores', getJugadores)
-
-router.post('/jugadores',createJugador)
-
-router.put('/jugadores/:dni', updateJugador)
-
-router.delete('/jugadores/:dni', deleteJugador)
-
-//ARBITRO
-router.get('/arbitros', getArbitros)
-
-router.post('/arbitros',createArbitro)
-
-router.put('/arbitros/:id', updateArbitro)
-
-router.delete('/arbitros/:id', deleteArbitro)
-
-//TORNEO
-router.get('/torneos', getTorneos)
-router.post('/torneos', createTorneo)
-router.put('/torneos/:id', updateTorneo)
-router.delete('/torneos/:id', deleteTorneo)
-router.get('/torneos/filtrar', getTorneosPorCategoriaYDivision)
-
 //FECHA
 router.get('/fechas', getFechas)
 router.post('/fechas', createFecha)
@@ -192,15 +181,16 @@ router.put('/ruedas/:id', updateRueda)
 router.delete('/ruedas/:id', deleteRueda)
 
 //PARTIDO
-router.get('/partidos', getPartidos)
-router.post('/partidos', createPartido)
-router.put('/partidos/:id', updatePartido)
-router.delete('/partidos/:id', deletePartido)
+router.post('/partidos', createupdatePartido)
+router.post('partido/:id', updatePartido)
+
 
 // FIXTURES
-router.get('/fixtures', getFixtures);
-router.post('/fixtures', createFixture);
-router.delete('/fixtures/:id', deleteFixture);
+
+router.get('/fixture', renderFixturePage);
+router.post('/fixtures/generate', generateFixture);
+router.get('/fixtures/detalle/:id', getFixtureDetails);
+router.get('/fixture/:id', getFixture);
 
 
 

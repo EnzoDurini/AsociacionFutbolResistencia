@@ -19,7 +19,7 @@
 </head>
 
 <body>
-  
+  <div class="wrapper">
     <header class="container-fluid colornuevo">
       <nav class="navbar navbar-expand-lg transparent">
         <div class="container-fluid">
@@ -59,187 +59,200 @@
 
 
     <main class="container mt-4">
-      <h1 class="text-center">Inscripción</h1>
-
       <div class="text-center my-4">
-        <button class="btn btn-primary me-2" onclick="mostrarFormulario('equipo')">Inscribir Equipo</button>
-        <button class="btn btn-secondary" onclick="mostrarFormulario('jugador')">Inscribir Jugador</button>
+        <button class="btn btn-primary me-2 btnDesign" onclick="mostrarFormulario('equipo')">Inscribir Equipo</button>
+        <button class="btn btn-primary btnDesign" onclick="mostrarFormulario('jugador')">Inscribir Jugador</button>
       </div>
 
       <!-- Formulario para Inscripción de Equipos -->
-      
-<form id="equipoForm" action="/equipos" method="post" class="needs-validation" novalidate>
-  <h2 class="mb-4">Inscripción de Equipo</h2>
-  <div class="row g-3">
-    <!-- División -->
-    <div class="col-md-6">
-      <label for="division" class="form-label">División:</label>
-      <select id="division" name="DivisionFK" class="form-select" required>
-        <option value="" selected disabled>Selecciona una división</option>
-        <% divisiones.forEach((division) => { %>
-          <option value="<%= division.Division %>"><%= division.Division %></option>
-        <% }); %>
-      </select>
-      <div class="invalid-feedback">Selecciona una división válida.</div>
-    </div>
 
-    <!-- Categoría -->
-    <div class="col-md-6">
-      <label for="categoria" class="form-label">Categoría:</label>
-      <select id="categoria" name="CategoriaFK" class="form-select" required>
-        <option value="" selected disabled>Selecciona una categoría</option>
-        <% categorias.forEach((categoria) => { %>
-          <option value="<%= categoria.Categoria %>">
-            <%= categoria.Categoria %> - <%= categoria.DescCategoria %>
-          </option>
-        <% }); %>
-      </select>
-      <div class="invalid-feedback">Selecciona una categoría válida.</div>
-    </div>
-  </div>
+      <form id="equipoForm" action="/equipos" method="post" class="needs-validation" novalidate>
+        <class class="container-fluid">
+          <class class="row">
+            <class class="col-lg-3"></class>
+            <class class="col-lg-6 text-center"><h1 class="fontDesing">Inscripción de Equipos</h1></class>
+            <class class="col-lg-3"></class>
+          </class>
+        </class>
 
-  <div class="row g-3 mt-3">
-    <!-- Nombre del Equipo -->
-    <div class="col-md-6">
-      <label for="nombreEquipo" class="form-label">Nombre del Equipo:</label>
-      <input
-        type="text"
-        id="nombreEquipo"
-        name="NombreEquipo"
-        class="form-control"
-        placeholder="Ej: Equipo A"
-        required
-      />
-      <div class="invalid-feedback">Ingresa el nombre del equipo.</div>
-    </div>
+        <div class="row g-3 fontDesing">
+          <!-- División -->
+          <div class="col-md-6">
+            <label for="division" class="form-label">División:</label>
+            <select id="division" name="DivisionFK" class="form-select" required>
+              <option value="" selected disabled>Selecciona una división</option>
+              <% divisiones.forEach((division)=> { %>
+                <option value="<%= division.Division %>">
+                  <%= division.Division %>
+                </option>
+                <% }); %>
+            </select>
+            <div class="invalid-feedback">Selecciona una división válida.</div>
+          </div>
 
-    <!-- Nombre del Director Técnico -->
-    <div class="col-md-6">
-      <label for="nombreDT" class="form-label">Nombre del Director Técnico:</label>
-      <input
-        type="text"
-        id="nombreDT"
-        name="NombreDT"
-        class="form-control"
-        placeholder="Ej: Lionel Scaloni"
-        required
-      />
-      <div class="invalid-feedback">Ingresa el nombre del director técnico.</div>
-    </div>
-  </div>
+          <!-- Categoría -->
+          <div class="col-md-6 fontDesing">
+            <label for="categoria" class="form-label">Categoría:</label>
+            <select id="categoria" name="CategoriaFK" class="form-select" required>
+              <option value="" selected disabled>Selecciona una categoría</option>
+              <% categorias.forEach((categoria)=> { %>
+                <option value="<%= categoria.Categoria %>">
+                  <%= categoria.Categoria %> - <%= categoria.DescCategoria %>
+                </option>
+                <% }); %>
+            </select>
+            <div class="invalid-feedback">Selecciona una categoría válida.</div>
+          </div>
+        </div>
 
-  <div class="row g-3 mt-3">
-    <!-- Nombre del Representante -->
-    <div class="col-md-6">
-      <label for="nombreRepresentante" class="form-label">Nombre del Representante:</label>
-      <input
-        type="text"
-        id="nombreRepresentante"
-        name="NombreRepresentante"
-        class="form-control"
-        placeholder="Ej: El consejo de fútbol"
-        required
-      />
-      <div class="invalid-feedback">Ingresa el nombre del representante.</div>
-    </div>
+        <div class="row g-3 mt-3 fontDesing">
+          <!-- Nombre del Equipo -->
+          <div class="col-md-6">
+            <label for="nombreEquipo" class="form-label">Nombre del Equipo:</label>
+            <input type="text" id="nombreEquipo" name="NombreEquipo" class="form-control" placeholder="Ej: Equipo A"
+              required />
+            <div class="invalid-feedback">Ingresa el nombre del equipo.</div>
+          </div>
 
-    <!-- Número del Equipo -->
-    <div class="col-md-6">
-      <label for="nroEquipo" class="form-label">Número del Equipo:</label>
-      <input
-        type="number"
-        id="nroEquipo"
-        name="NROEQUIPO"
-        class="form-control"
-        value="<%= siguienteNumEquipo %>"
-        readonly
-      />
-    </div>
-  </div>
+          <!-- Nombre del Director Técnico -->
+          <div class="col-md-6 fontDesing">
+            <label for="nombreDT" class="form-label">Nombre del Director Técnico:</label>
+            <input type="text" id="nombreDT" name="NombreDT" class="form-control" placeholder="Ej: Lionel Scaloni"
+              required />
+            <div class="invalid-feedback">Ingresa el nombre del director técnico.</div>
+          </div>
+        </div>
 
-  <div class="mt-4">
-    <button type="submit" class="btn btn-primary w-100">Registrar Equipo</button>
-  </div>
-</form>
+        <div class="row g-3 mt-3 fontDesing">
+          <!-- Nombre del Representante -->
+          <div class="col-md-6">
+            <label for="nombreRepresentante" class="form-label">Nombre del Representante:</label>
+            <input type="text" id="nombreRepresentante" name="NombreRepresentante" class="form-control"
+              placeholder="Ej: El consejo de fútbol" required />
+            <div class="invalid-feedback">Ingresa el nombre del representante.</div>
+          </div>
+
+          <!-- Número del Equipo -->
+          <div class="col-md-6 fontDesing">
+            <label for="nroEquipo" class="form-label">Número del Equipo:</label>
+            <input type="number" id="nroEquipo" name="NROEQUIPO" class="form-control" value="<%= siguienteNumEquipo %>"
+              readonly />
+          </div>
+        </div>
+
+        <div class="mt-4 container-fluid fontDesing">
+          <div class="row">
+            <div class="col-lg-3"></div>
+            <button type="submit" class="btn btn-primary w-50 btnDesign">Registrar Equipo</button>
+            <div class="col-lg-3"></div>
+          </div>
+
+        </div>
+      </form>
 
 
       <!-- Formulario para Inscripción de Jugadores -->
       <form id="jugadorForm" action="/jugadores" method="POST" style="display: none;">
-        <h2>Inscripción de Jugador</h2>
-      
-        <!-- Datos personales -->
-        <fieldset>
-          <legend>Datos Personales</legend>
-          <div>
-            <label for="dni">DNI:</label>
-            <input type="number" id="dni" name="DNI" placeholder="DNI" required>
+        <div class="container-fluid fontDesing">
+          <div class="row text-center">
+            <div class="col-lg-3"></div>
+            <div class="col-lg-6">
+              <h1 class="fontDesing">Inscripción de Jugadores</h1>
+              <br>
+              <br>
+            </div>
+            <div class="col-lg-3"></div>
           </div>
-      
-          <div>
-            <label for="nombre">Nombre:</label>
-            <input type="text" id="nombre" name="Nombre" placeholder="Nombre del jugador" required>
+        </div>
+
+
+        <div class="row text-center fontDesing">
+          <!-- Datos Personales -->
+          <div class="col-lg-6">
+            <fieldset>
+              <legend>Datos Personales</legend>
+              <br>
+              <div>
+                <label for="dni">DNI:</label>
+                <input type="number" id="dni" name="DNI" placeholder="DNI" required>
+              </div>
+              <br>
+              <div>
+                <label for="nombre">Nombre:</label>
+                <input type="text" id="nombre" name="Nombre" placeholder="Nombre del jugador" required>
+              </div>
+              <br>
+              <div>
+                <label for="apellido">Apellido:</label>
+                <input type="text" id="apellido" name="Apellido" placeholder="Apellido del jugador" required>
+              </div>
+              <br>
+              <div>
+                <label for="direccion">Dirección:</label>
+                <input type="text" id="direccion" name="Direccion" placeholder="Dirección" required>
+              </div>
+              <br>
+              <div>
+                <label for="telefono">Teléfono:</label>
+                <input type="tel" id="telefono" name="Telefono" placeholder="Teléfono" required>
+              </div>
+              <br>
+              <div>
+                <label for="fechaNacimiento">Fecha de Nacimiento:</label>
+                <input type="date" id="fechaNacimiento" name="FechaNacimiento" required
+                  onchange="calcularCategoriaYEquipos()">
+              </div>
+            </fieldset>
           </div>
-      
-          <div>
-            <label for="apellido">Apellido:</label>
-            <input type="text" id="apellido" name="Apellido" placeholder="Apellido del jugador" required>
+
+          <!-- Información del Jugador -->
+          <div class="col-lg-6">
+            <fieldset>
+              <legend>Información del Jugador</legend>
+              <br>
+              <div>
+                <label for="nroSocio">Número de Socio:</label>
+                <input type="number" id="nroSocio" name="NROSOCIO" placeholder="Número de socio" required>
+              </div>
+              <br>
+              <div>
+                <label for="foto">Foto:</label>
+                <input type="file" id="foto" name="Foto" accept="image/*">
+              </div>
+              <br>
+            </fieldset>
+            <fieldset>
+              <div>
+                <label for="categoria">Categoría:</label>
+                <!-- Campo que contendrá el valor dinámico de CATEGORIAFK -->
+                <input type="text" id="categoriaFK" name="CATEGORIAFK" readonly required>
+              </div>
+              <br>
+              <div>
+                <label for="equipo">Equipo:</label>
+                <select id="equipo" name="NROEQUIPOFK" required>
+                  <option value="">Seleccionar equipo</option>
+                </select>
+              </div>
+              <br>
+            </fieldset>
           </div>
-      
-          <div>
-            <label for="direccion">Dirección:</label>
-            <input type="text" id="direccion" name="Direccion" placeholder="Dirección" required>
-          </div>
-      
-          <div>
-            <label for="telefono">Teléfono:</label>
-            <input type="tel" id="telefono" name="Telefono" placeholder="Teléfono" required>
-          </div>
-      
-          <div>
-            <label for="fechaNacimiento">Fecha de Nacimiento:</label>
-            <input type="date" id="fechaNacimiento" name="FechaNacimiento" required onchange="calcularCategoriaYEquipos()">
-          </div>
-        </fieldset>
-      
-        <!-- Información específica del jugador -->
-        <fieldset>
-          <legend>Información del Jugador</legend>
-          <div>
-            <label for="nroSocio">Número de Socio:</label>
-            <input type="number" id="nroSocio" name="NROSOCIO" placeholder="Número de socio" required>
-          </div>
-      
-          <div>
-            <label for="foto">Foto:</label>
-            <input type="file" id="foto" name="Foto" accept="image/*">
-          </div>
-        </fieldset>
-      
-        <!-- Relación con categoría y equipo -->
-        <fieldset>
-          <div>
-            <label for="categoria">Categoría:</label>
-            <!-- Campo que contendrá el valor dinámico de CATEGORIAFK -->
-            <input type="text" id="categoriaFK" name="CATEGORIAFK"readonly required>
-          </div>
-        
-        
-          <div>
-            <label for="equipo">Equipo:</label>
-            <select id="equipo" name="NROEQUIPOFK" required>
-              <option value="">Seleccionar equipo</option>
-            </select>
-          </div>
-        </fieldset>
-      
-        <button type="submit">Registrar Jugador</button>
+        </div>
+        <br>
+        <br>
+        <div class="row text-center fontDesing">
+          <div class="col-lg-3"></div>
+          <div class="col-lg-6"> <button class="btn btn-primary w-50 btnDesign" type="submit">Registrar Jugador</button></div>
+          <div class="col-lg-3"></div>
+        </div>
+
       </form>
-      
+
     </main>
-  
 
 
-  
+
+
 
 
 
@@ -279,7 +292,7 @@
   <script src="https://kit.fontawesome.com/026c9a0387.js" crossorigin="anonymous"></script>
 
 
-    <!-- Scripts funcionales para la vista-->
+  <!-- Scripts funcionales para la vista-->
   <script>
     function mostrarFormulario(tipo) {
       document.getElementById('equipoForm').style.display = tipo === 'equipo' ? 'block' : 'none';
@@ -287,76 +300,76 @@
     }
 
     async function calcularCategoriaYEquipos() {
-  const fechaNacimientoInput = document.getElementById('fechaNacimiento');
-  const categoriaInput = document.getElementById('categoriaFK'); // Input de categoría
-  const equipoSelect = document.getElementById('equipo'); // Select de equipos
+      const fechaNacimientoInput = document.getElementById('fechaNacimiento');
+      const categoriaInput = document.getElementById('categoriaFK'); // Input de categoría
+      const equipoSelect = document.getElementById('equipo'); // Select de equipos
 
-  // Obtener la fecha de nacimiento
-  const fechaNacimiento = new Date(fechaNacimientoInput.value);
-  const hoy = new Date();
+      // Obtener la fecha de nacimiento
+      const fechaNacimiento = new Date(fechaNacimientoInput.value);
+      const hoy = new Date();
 
-  // Validar si la fecha de nacimiento es válida
-  if (!fechaNacimiento || isNaN(fechaNacimiento)) {
-    console.log('Fecha de nacimiento inválida');
-    categoriaInput.value = ''; // Limpiar categoría
-    equipoSelect.innerHTML = '<option value="">Seleccionar equipo</option>';
-    return;
-  }
+      // Validar si la fecha de nacimiento es válida
+      if (!fechaNacimiento || isNaN(fechaNacimiento)) {
+        console.log('Fecha de nacimiento inválida');
+        categoriaInput.value = ''; // Limpiar categoría
+        equipoSelect.innerHTML = '<option value="">Seleccionar equipo</option>';
+        return;
+      }
 
-  // Calcular la edad
-  let edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
-  const mes = hoy.getMonth() - fechaNacimiento.getMonth();
-  if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
-    edad--;
-  }
+      // Calcular la edad
+      let edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
+      const mes = hoy.getMonth() - fechaNacimiento.getMonth();
+      if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
+        edad--;
+      }
 
-  console.log('Edad calculada:', edad);
+      console.log('Edad calculada:', edad);
 
-  // Determinar la categoría según la edad
-  let categoriaFK = null;
-try {
-  if (edad >= 41 && edad <= 45) {
-    categoriaFK = 'Maxi';
-  } else if (edad >= 46 && edad <= 50) {
-    categoriaFK = 'Super';
-  } else if (edad >= 51 && edad <= 55) {
-    categoriaFK = 'Master';
-  }
+      // Determinar la categoría según la edad
+      let categoriaFK = null;
+      try {
+        if (edad >= 41 && edad <= 45) {
+          categoriaFK = 'Maxi';
+        } else if (edad >= 46 && edad <= 50) {
+          categoriaFK = 'Super';
+        } else if (edad >= 51 && edad <= 55) {
+          categoriaFK = 'Master';
+        }
 
-  if (categoriaFK) {
-    console.log('Categoría asignada:', categoriaFK);
-    categoriaInput.value = categoriaFK; // Asignar valor al input
-  } else {
-    console.log('Edad fuera de rango para cualquier categoría');
-    categoriaInput.value = ''; // Limpiar si no hay categoría válida
-    equipoSelect.innerHTML = '<option value="">Seleccionar equipo</option>';
-    return;
-  }
-} catch (error) {
-  console.log('error del if ',error)
-}
-  
+        if (categoriaFK) {
+          console.log('Categoría asignada:', categoriaFK);
+          categoriaInput.value = categoriaFK; // Asignar valor al input
+        } else {
+          console.log('Edad fuera de rango para cualquier categoría');
+          categoriaInput.value = ''; // Limpiar si no hay categoría válida
+          equipoSelect.innerHTML = '<option value="">Seleccionar equipo</option>';
+          return;
+        }
+      } catch (error) {
+        console.log('error del if ', error)
+      }
 
-  // Cargar los equipos correspondientes a la categoría
-  try {
-    console.log('Buscando equipos para la categoría:', categoriaFK);
-    const response = await fetch(`/equipos/categoria/${categoriaFK}`);
-    const equipos = await response.json();
 
-    equipoSelect.innerHTML = '<option value="">Seleccionar equipo</option>';
-    equipos.forEach((equipo) => {
-      const option = document.createElement('option');
-      option.value = equipo.NROEQUIPO;
-      option.textContent = equipo.NombreEquipo;
-      equipoSelect.appendChild(option);
-    });
+      // Cargar los equipos correspondientes a la categoría
+      try {
+        console.log('Buscando equipos para la categoría:', categoriaFK);
+        const response = await fetch(`/equipos/categoria/${categoriaFK}`);
+        const equipos = await response.json();
 
-    console.log('Equipos cargados:', equipos);
-  } catch (error) {
-    console.error('Error al cargar equipos:', error);
-    equipoSelect.innerHTML = '<option value="">Error al cargar equipos</option>';
-  }
-}
+        equipoSelect.innerHTML = '<option value="">Seleccionar equipo</option>';
+        equipos.forEach((equipo) => {
+          const option = document.createElement('option');
+          option.value = equipo.NROEQUIPO;
+          option.textContent = equipo.NombreEquipo;
+          equipoSelect.appendChild(option);
+        });
+
+        console.log('Equipos cargados:', equipos);
+      } catch (error) {
+        console.error('Error al cargar equipos:', error);
+        equipoSelect.innerHTML = '<option value="">Error al cargar equipos</option>';
+      }
+    }
 
   </script>
 </body>

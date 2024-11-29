@@ -1,10 +1,13 @@
 body{
     background-color: rgb(93, 93, 100);
+     overflow-x: hidden;
+     overflow-y: hidden;
+  
 }
 
 html, body {
-  height: 100%; /* Asegura que ocupen toda la altura de la ventana */
-  margin: 0;    /* Elimina márgenes */
+  height: 100%; 
+  margin: 0;    
   padding: 0;
 }
 
@@ -50,12 +53,12 @@ html, body {
   }
 
   .cabecera {
-    justify-content: center; /* Centra horizontalmente los elementos dentro de un flexbox */
+    justify-content: center; 
     background-color: transparent;
     font-size: large;
     color: rgb(232, 235, 233);
-    display: flex; /* Asegura el uso del flexbox */
-    text-align: center; /* Asegura el centrado del texto */
+    display: flex; 
+    text-align: center; 
 }
 
 
@@ -95,7 +98,22 @@ html, body {
   }
 
   .wrapper {
-    min-height: 100%; /* Asegura que siempre cubra el 100% del alto de la ventana */
+    min-height: 100%; 
     display: flex;
-    flex-direction: column; /* Organiza los hijos en una columna */
+    flex-direction: column; 
+}
+
+
+ /* inscripcion */
+
+ .btnDesign{
+  border-radius: 8px;
+ }
+
+/* .fontDesing{
+  color: rgb(0, 0, 0);
+} */
+.fontDesing {
+  color: rgb(0, 0, 0);
+  font-weight: bold
 }
