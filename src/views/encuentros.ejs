@@ -19,7 +19,7 @@
 </head>
 
 <body>
-  <div class="wrapper">
+  <div class="wrapper fontDesing fuentXL">
     <header class="container-fluid colornuevo">
       <nav class="navbar navbar-expand-lg transparent">
         <div class="container-fluid">
@@ -110,10 +110,10 @@
                 </select>
               </td>
               <td>
-                <button class="btn btn-success" onclick="updatePartido(<%= partido.IDPARTIDO %>)">Guardar</button>
+                <button class="btn btn-outline-info btnDesign2" onclick="updatePartido(<%= partido.IDPARTIDO %>)">Guardar</button>
               </td>
               <td>
-                <a href="/encuentro/<%= partido.IDPARTIDO %>" class="btn btn-info">Resultados</a>
+                <a href="/encuentro/<%= partido.IDPARTIDO %>" class="btn btn-success btnDesign">Resultados</a>
               </td>
             </tr>
           <% }); %>

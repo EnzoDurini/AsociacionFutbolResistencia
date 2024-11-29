@@ -116,8 +116,27 @@ border-radius: 8px;
 font-weight: bold
 }
 
+.btnDesign2{
+  border-radius: 8px;
+  font-weight: bold;
+  color: rgb(0, 0, 0);
+background-color: rgb(96, 187, 223);
+  }
 
 .fontDesing {
 color: rgb(0, 0, 0);
 font-weight: bold
+}
+
+.textIndex{
+  background-color: rgb(184, 184, 184);
+  border: solid black 2px;
+  font-size: x-large;
+}
+.ppt{
+  padding-top: 25px;
+}
+
+.fuentL{
+  font-size: large;
 }
