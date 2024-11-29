@@ -1,0 +1,95 @@
+<table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Rueda</th>
+        <th>Fecha</th>
+        <th>Equipo Local</th>
+        <th>Equipo Visitante</th>
+        <th>Fecha/Hora</th>
+        <th>Nombre Cancha</th>
+        <th>Ubicación Cancha</th>
+        <th>Árbitro</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% fixtureDetalles.forEach(partido => { %>
+        <tr>
+          <td><%= partido.NroRueda %> - <%= partido.NombreRueda %></td>
+          <td><%= partido.NroFecha %></td>
+          <td><%= partido.EquipoLocal %></td>
+          <td><%= partido.EquipoVisitante %></td>
+          <td>
+            <input type="datetime-local" class="form-control" 
+            value="<%= partido.FechaHoraEncuentro ? new Date(partido.FechaHoraEncuentro).toISOString().slice(0,16) : '' %>" 
+                   id="fechaHora-<%= partido.IDPARTIDO %>">
+          </td>
+          <td>
+            <input type="text" class="form-control" 
+                   value="<%= partido.NombreCancha || '' %>" 
+                   id="nombreCancha-<%= partido.IDPARTIDO %>">
+          </td>
+          <td>
+            <input type="text" class="form-control" 
+                   value="<%= partido.UbicCancha || '' %>" 
+                   id="ubicCancha-<%= partido.IDPARTIDO %>">
+          </td>
+          <td>
+            <select class="form-select" id="arbitro-<%= partido.IDPARTIDO %>">
+              <option value="">Sin asignar</option>
+              <% arbitros.forEach(arbitro => { %>
+                <option value="<%= arbitro.DNIFK %>" 
+                        <%= partido.DNIARBITRO === arbitro.DNIFK ? 'selected' : '' %>>
+                  <%= arbitro.NombreArbitro %>
+                </option>
+              <% }); %>
+            </select>
+          </td>
+          <td>
+            <button class="btn btn-success" onclick="updatePartido(<%= partido.IDPARTIDO %>)">Guardar</button>
+          </td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+  <script>
+    async function updatePartido(idPartido) {
+  const fechaHora = document.getElementById(`fechaHora-${idPartido}`).value;
+  const nombreCancha = document.getElementById(`nombreCancha-${idPartido}`).value;
+  const ubicCancha = document.getElementById(`ubicCancha-${idPartido}`).value;
+  const dniArbitro = document.getElementById(`arbitro-${idPartido}`).value || null;
+
+  try {
+    const response = await fetch('/partido/update', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        idPartido,
+        fechaHora,
+        nombreCancha,
+        ubicCancha,
+        dniArbitro,
+      }),
+    });
+
+    if (response.ok) {
+      alert('Partido actualizado exitosamente.');
+      // Aquí puedes actualizar directamente los valores en la tabla, por ejemplo:
+      document.getElementById(`fechaHora-${idPartido}`).value = fechaHora;
+      document.getElementById(`nombreCancha-${idPartido}`).value = nombreCancha;
+      document.getElementById(`ubicCancha-${idPartido}`).value = ubicCancha;
+      const arbitroNombre = document.querySelector(`#arbitro-${idPartido} option[value="${dniArbitro}"]`).innerText;
+      document.querySelector(`#arbitro-${idPartido}`).value = dniArbitro || '';
+    } else {
+      const error = await response.text();
+      alert(`Error: ${error}`);
+    }
+  } catch (err) {
+    console.error('Error al actualizar el partido:', err);
+    alert('Error interno al actualizar el partido.');
+  }
+}
+  </script>
+  

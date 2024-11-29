@@ -65,29 +65,30 @@ export const createupdatePartido = async (req, res) => {
 
   export const updatePartido = async (req, res) => {
     try {
-      const { idPartido } = req.params;
-      const { FechaHoraEncuentro, DNIARBITROFK, NombreCancha, UbicCancha } = req.body;
+      const { idPartido, fechaHora, nombreCancha, ubicCancha, dniArbitro } = req.body;
+      console.log('Datos a actualizar de partido:',req.body)
   
       const pool = await getConnection();
   
       await pool.request()
         .input('IdPartido', sql.Int, idPartido)
-        .input('FechaHoraEncuentro', sql.DateTime, FechaHoraEncuentro)
-        .input('DNIARBITROFK', sql.Int, DNIARBITROFK)
-        .input('NombreCancha', sql.VarChar, NombreCancha)
-        .input('UbicCancha', sql.VarChar, UbicCancha)
+        .input('FechaHoraEncuentro', sql.DateTime, fechaHora)
+        .input('NombreCancha', sql.VarChar, nombreCancha)
+        .input('UbicCancha', sql.VarChar, ubicCancha)
+        .input('DNIARBITROFK', sql.Int, dniArbitro || null)
         .query(`
           UPDATE Partido
-          SET FechaHoraEncuentro = @FechaHoraEncuentro,
-              DNIARBITROFK = @DNIARBITROFK,
-              NombreCancha = @NombreCancha,
-              UbicCancha = @UbicCancha
-          WHERE IdPartido = @IdPartido
+          SET 
+            FechaHoraEncuentro = @FechaHoraEncuentro,
+            NombreCancha = @NombreCancha,
+            UbicCancha = @UbicCancha,
+            DNIARBITROFK = @DNIARBITROFK
+          WHERE IDPARTIDO = @IdPartido
         `);
   
-      res.status(200).send('Partido actualizado con éxito.');
+      res.status(200).send('Partido actualizado exitosamente.');
     } catch (error) {
-      console.error('Error al actualizar partido:', error.message);
-      res.status(500).send('Error interno del servidor.');
+      console.error('Error al actualizar el partido:', error.message);
+      res.status(500).send('Error interno al actualizar el partido.');
     }
   };

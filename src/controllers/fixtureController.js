@@ -107,46 +107,29 @@ export const generateFixture = async (req, res) => {
 
 
 // Obtener detalles de un fixture
+// Obtener detalles de un fixture
 export const getFixture = async (req, res) => {
-  try {
-    const { idFixture } = req.params;
-    const pool = await getConnection();
-
-    const fixtureDetalles = await pool.request()
-      .input('IdFixture', sql.Int, idFixture)
-      .query(`
-        SELECT 
-          F.NombreFixture, 
-          R.NombreRueda, 
-          P.FechaHoraEncuentro, 
-          P.UbicCancha, 
-          A.NombreArbitro
-        FROM Fixture F
-        LEFT JOIN Rueda R ON F.IdFixture = R.IdFixtureFK
-        LEFT JOIN Fecha Fe ON R.IdRueda = Fe.IdRuedaFK
-        LEFT JOIN Partido P ON Fe.IdFecha = P.NroFechaFK
-        LEFT JOIN Arbitro A ON P.DNIARBITROFK = A.DNIARBITRO
-        WHERE F.IdFixture = @IdFixture
-      `);
-
-    res.json(fixtureDetalles.recordset);
-  } catch (error) {
-    console.error('Error al obtener fixture:', error.message);
-    res.status(500).send('Error interno al obtener el fixture.');
-  }
-};
-
-export const getFixtureDetails = async (req, res) => {
   try {
     const { id } = req.params;
     const pool = await getConnection();
 
+    // Obtener los detalles del fixture
     const detalles = await pool.request()
       .input('IdFixture', sql.Int, id)
       .query(`
-        SELECT P.FechaHoraEncuentro, P.NombreCancha, P.UbicCancha, A.NombreArbitro
+        SELECT 
+          P.IDPARTIDO, 
+          P.FechaHoraEncuentro, 
+          P.NombreCancha, 
+          P.UbicCancha, 
+          CONCAT(Pe.Nombre, ' ', Pe.Apellido) AS NombreArbitro, 
+          EL.NombreEquipo AS EquipoLocal, 
+          EV.NombreEquipo AS EquipoVisitante
         FROM Partido P
-        LEFT JOIN Arbitro A ON P.DNIARBITROFK = A.DNIARBITRO
+        LEFT JOIN Arbitro A ON P.DNIARBITROFK = A.DNIFK
+        LEFT JOIN Persona Pe ON A.DNIFK = Pe.DNI
+        LEFT JOIN Equipo EL ON P.IdEquipoLocal = EL.NROEQUIPO
+        LEFT JOIN Equipo EV ON P.IdEquipoVisitante = EV.NROEQUIPO
         WHERE P.NroFechaFK IN (
           SELECT F.IdFecha
           FROM Fecha F
@@ -155,12 +138,31 @@ export const getFixtureDetails = async (req, res) => {
         )
       `);
 
-    res.render('detalleFixture', { fixtureDetalles: detalles.recordset });
+    // Obtener todos los árbitros disponibles
+    const arbitros = await pool.request().query(`
+      SELECT 
+        A.DNIFK, 
+        CONCAT(Pe.Nombre, ' ', Pe.Apellido) AS NombreArbitro
+      FROM Arbitro A
+      INNER JOIN Persona Pe ON A.DNIFK = Pe.DNI
+    `);
+
+    // Renderizar la vista con los detalles del fixture y los árbitros
+    res.render('detalleFixture', {
+      fixtureDetalles: detalles.recordset,
+      arbitros: arbitros.recordset,
+    });
   } catch (error) {
     console.error('Error al obtener detalles del fixture:', error.message);
     res.status(500).send('Error al obtener detalles del fixture.');
   }
 };
+
+
+export const getFixtureDetails = async (req, res) => {
+  
+};
+
 
 export const renderFixturePage = async (req, res) => {
   try {

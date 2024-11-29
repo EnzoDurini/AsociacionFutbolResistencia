@@ -7,7 +7,7 @@ import { createupdatePartido, updatePartido} from '../controllers/partidoControl
 import {createFecha, deleteFecha, getFechas, updateFecha} from '../controllers/fechaController.js';
 import { createRueda, deleteRueda, getRuedas, updateRueda} from '../controllers/ruedaController.js';
 import { createTorneo, getTorneos, updateTorneo, deleteTorneo, getTorneosPorCategoriaYDivision } from '../controllers/torneoController.js';
-import { generateFixture,getFixtureDetails, getFixture, renderFixturePage} from '../controllers/fixtureController.js';
+import { generateFixture, getFixture, renderFixturePage} from '../controllers/fixtureController.js';
 import { getEquipoByName, verificarInscripcion, inscribirEquipoEnTorneo} from '../controllers/equipoParticipaTorneoController.js';
 
 import { getConnection } from '../controllers/dbController.js';
@@ -182,15 +182,15 @@ router.delete('/ruedas/:id', deleteRueda)
 
 //PARTIDO
 router.post('/partidos', createupdatePartido)
-router.post('partido/:id', updatePartido)
+router.post('/partido/update', updatePartido);
 
 
 // FIXTURES
 
 router.get('/fixture', renderFixturePage);
 router.post('/fixtures/generate', generateFixture);
-router.get('/fixtures/detalle/:id', getFixtureDetails);
-router.get('/fixture/:id', getFixture);
+router.get('/fixtures/detalle/:id', getFixture);
+
 
 
 
