@@ -38,7 +38,7 @@ export const createEquipo = async (req, res) => {
         VALUES (@NombreEquipo, @NombreDT, @NombreRepresentante, @DivisionFK, @CategoriaFK, @NROEQUIPO)
       `);
 
-    res.status(201).send('Equipo creado exitosamente');
+      res.redirect('/inscripcion');
   } catch (error) {
     console.error('Error al crear equipo:', error.message);
     res.status(500).send('Error al crear equipo');
