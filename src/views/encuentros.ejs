@@ -56,16 +56,63 @@
       </nav>
     </header>
 
+    <main class="container mt-4">
+      <h1 class="text-center">Programación de Encuentros</h1>
+    
+      <!-- Tabla de partidos -->
+      <table class="table table-striped mt-4">
+        <thead>
+          <tr>
+            <th>Equipo Local</th>
+            <th>Equipo Visitante</th>
+            <th>Fecha/Hora</th>
+            <th>Nombre Cancha</th>
+            <th>Ubicación</th>
+            <th>Árbitro</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% partidos.forEach(partido => { %>
+            <tr>
+              <td><%= partido.EquipoLocal %></td>
+              <td><%= partido.EquipoVisitante %></td>
+              <td>
+                <input type="datetime-local" class="form-control" 
+                       value="<%= new Date(partido.FechaHoraEncuentro).toISOString().slice(0,16) %>" 
+                       id="fechaHora-<%= partido.IDPARTIDO %>">
+              </td>
+              <td>
+                <input type="text" class="form-control" 
+                       value="<%= partido.NombreCancha || '' %>" 
+                       id="nombreCancha-<%= partido.IDPARTIDO %>">
+              </td>
+              <td>
+                <input type="text" class="form-control" 
+                       value="<%= partido.UbicCancha || '' %>" 
+                       id="ubicCancha-<%= partido.IDPARTIDO %>">
+              </td>
+              <td>
+                <select class="form-select" id="arbitro-<%= partido.IDPARTIDO %>">
+                  <option value="">Sin asignar</option>
+                  <% arbitros.forEach(arbitro => { %>
+                    <option value="<%= arbitro.DNIARBITRO %>" 
+                            <%= partido.DNIARBITROFK === arbitro.DNIARBITRO ? 'selected' : '' %>>
+                      <%= arbitro.NombreArbitro %>
+                    </option>
+                  <% }); %>
+                </select>
+              </td>
+              <td>
+                <button class="btn btn-success" onclick="updatePartido(<%= partido.IDPARTIDO %>)">Guardar</button>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </main>
 
-
-    <h1>Bienvenido a la Asociación de Fútbol</h1>
-    <form action="/equipos" method="POST">
-      <label>Nombre del equipo:</label>
-      <input type="text" name="nombre" required>
-      <label>Director Técnico:</label>
-      <input type="text" name="directorTecnico" required>
-      <button type="submit">Registrar Equipo</button>
-    </form>
+   
 
 
     <footer class="container-fluid">
@@ -102,6 +149,42 @@
     crossorigin="anonymous"></script>
   <!-- Fonts -->
   <script src="https://kit.fontawesome.com/026c9a0387.js" crossorigin="anonymous"></script>
+<!-- Scripts de funcionamiento de la pagina -->
+<script>
+async function updatePartido(idPartido) {
+    const fechaHora = document.getElementById(`fechaHora-${idPartido}`).value;
+    const nombreCancha = document.getElementById(`nombreCancha-${idPartido}`).value;
+    const ubicCancha = document.getElementById(`ubicCancha-${idPartido}`).value;
+    const dniArbitro = document.getElementById(`arbitro-${idPartido}`).value;
+
+    try {
+      const response = await fetch('/partido/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          idPartido,
+          fechaHora,
+          nombreCancha,
+          ubicCancha,
+          dniArbitro,
+        }),
+      });
+
+      if (response.ok) {
+        alert('Partido actualizado exitosamente.');
+        location.reload(); // Recargar la página
+      } else {
+        const error = await response.text();
+        alert(`Error: ${error}`);
+      }
+    } catch (err) {
+      console.error('Error al actualizar el partido:', err);
+      alert('Error interno al actualizar el partido.');
+    }
+  }
+</script>
+
+
 </body>
 
 </html>

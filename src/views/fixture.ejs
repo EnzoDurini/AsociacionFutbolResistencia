@@ -56,13 +56,13 @@
       </nav>
     </header>
 
-    <main>
+    <main class="fontDesing">
     <div class="container mt-5">
       <h1 class="text-center">Gestión de Fixtures</h1>
   
       <!-- Botón para mostrar el formulario de generar fixture -->
       <div class="text-center mt-4">
-        <button class="btn btn-primary" id="btnMostrarForm">Generar Fixture</button>
+        <button class="btn btn-primary btnDesign" id="btnMostrarForm">Generar Fixture</button>
       </div>
   
       <!-- Formulario para generar fixture (oculto por defecto) -->
@@ -80,7 +80,7 @@
             <label for="nroRuedas" class="form-label">Número de Ruedas</label>
             <input type="number" id="nroRuedas" name="nroRuedas" class="form-control" required min="1" value="1">
           </div>
-          <button type="submit" class="btn btn-success">Generar Fixture</button>
+          <button type="submit" class="btn btn-primary btnDesign">Generar Fixture</button>
         </form>
       </div>
   
@@ -101,7 +101,7 @@
                 <td><%= fixture.IdFixture %></td>
                 <td><%= fixture.NombreFixture %></td>
                 <td>
-                  <a href="/fixtures/detalle/<%= fixture.IdFixture %>" class="btn btn-info">Modificar</a>
+                  <a href="/fixtures/detalle/<%= fixture.IdFixture %>" class="btn btn-success btnDesign">Modificar</a>
                 </td>
               </tr>
             <% }); %>
@@ -113,7 +113,7 @@
     </div>
     
     
-</main>
+  </main>
 
     <footer class="container-fluid">
       <div class="row">

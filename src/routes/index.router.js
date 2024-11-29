@@ -2,8 +2,8 @@ import { Router } from 'express';
 import sql from 'mssql';
 import { createEquipo, deleteEquipo, getEquipos, updateEquipo } from '../controllers/equipoController.js';
 import {createJugador,deleteJugador,getJugadores,updateJugador} from '../controllers/jugadorController.js';
-import { createArbitro, deleteArbitro, getArbitros, updateArbitro } from '../controllers/arbitroController.js';
-import { createupdatePartido, updatePartido} from '../controllers/partidoController.js';
+import { createArbitro, deleteArbitro, getArbitros, updateArbitro, getArbitrosNombre } from '../controllers/arbitroController.js';
+import { createupdatePartido, getPartidos, updatePartido} from '../controllers/partidoController.js';
 import {createFecha, deleteFecha, getFechas, updateFecha} from '../controllers/fechaController.js';
 import { createRueda, deleteRueda, getRuedas, updateRueda} from '../controllers/ruedaController.js';
 import { createTorneo, getTorneos, updateTorneo, deleteTorneo, getTorneosPorCategoriaYDivision } from '../controllers/torneoController.js';
@@ -42,13 +42,51 @@ router.get('/inscripcion', async (req, res) => {
 });
 
 
-//vista torneo
+router.get('/encuentros', async (req, res) => {
+  try {
+    // Obtener partidos y árbitros
+    const pool = await getConnection();
 
+    // Obtener los partidos
+    const resultPartidos = await pool.request().query(`
+      SELECT 
+        P.IDPARTIDO, 
+        P.FechaHoraEncuentro, 
+        P.NombreCancha, 
+        P.UbicCancha,
+        P.DNIARBITROFK,
+        EL.NombreEquipo AS EquipoLocal, 
+        EV.NombreEquipo AS EquipoVisitante,
+        CONCAT(PER.Nombre, ' ', PER.Apellido) AS NombreArbitro
+      FROM Partido P
+      LEFT JOIN Equipo EL ON P.IdEquipoLocal = EL.NROEQUIPO
+      LEFT JOIN Equipo EV ON P.IdEquipoVisitante = EV.NROEQUIPO
+      LEFT JOIN Arbitro A ON P.DNIARBITROFK = A.DNIFK
+      LEFT JOIN Persona PER ON A.DNIFK = PER.DNI
+    `);
 
+    const partidos = resultPartidos.recordset;
 
-router.get('/encuentros', (req, res) => {
-  res.render('encuentros');
+    // Obtener los árbitros
+    const resultArbitros = await pool.request().query(`
+      SELECT A.DNIFK, CONCAT(P.Nombre, ' ', P.Apellido) AS NombreArbitro
+      FROM Arbitro A
+      INNER JOIN Persona P ON A.DNIFK = P.DNI
+    `);
+
+    const arbitros = resultArbitros.recordset;
+
+    // Renderizar la vista
+    res.render('encuentros', {
+      partidos,
+      arbitros,
+    });
+  } catch (error) {
+    console.error('Error al cargar la vista de encuentros:', error.message);
+    res.status(500).send('Error interno al cargar la vista de encuentros.');
+  }
 });
+
 
 
 router.get('/resultados', (req, res) => {
@@ -57,13 +95,10 @@ router.get('/resultados', (req, res) => {
 
 //EQUIPO
 router.get('/equipos', getEquipos)
-
 router.post('/equipos',createEquipo)
-
 router.put('/equipos/:id', updateEquipo)
-
+router.post('/partido/update', updatePartido);
 router.delete('/equipos/:id', deleteEquipo)
-//Trae los equipos por ID de cateogira
 router.get('/equipos/categoria/:categoriaFK', async (req, res) => {
   try {
     const { categoriaFK } = req.params;
@@ -82,8 +117,8 @@ router.get('/equipos/categoria/:categoriaFK', async (req, res) => {
     console.error('Error al obtener equipos por categoría:', error.message);
     res.status(500).json({ message: 'Error al obtener equipos por categoría' });
   }
-});
-
+});//Trae los equipos por ID de cateogira
+router.get('/equipos/nombre/:nombre', getEquipoByName);
 
 //JUGADOR
 router.get('/jugadores', getJugadores)
@@ -96,12 +131,10 @@ router.delete('/jugadores/:dni', deleteJugador)
 
 //ARBITRO
 router.get('/arbitros', getArbitros)
-
 router.post('/arbitros',createArbitro)
-
 router.put('/arbitros/:id', updateArbitro)
-
 router.delete('/arbitros/:id', deleteArbitro)
+router.get('/arbitros/nombre', getArbitrosNombre)
 
 //TORNEO
 router.get('/torneos', getTorneos)
@@ -126,7 +159,6 @@ router.get('/torneo', async (req, res) => {
     res.status(500).send('Error interno al cargar la vista de torneo');
   }
 });
-//Inscripcion de equipos en torneo
 router.post('/torneos/:id/inscribirEquipo', async (req, res) => {
   try {
     const { id } = req.params; // ID del torneo
@@ -165,7 +197,11 @@ router.post('/torneos/:id/inscribirEquipo', async (req, res) => {
     console.error('Error al inscribir equipo en torneo:', error.message);
     res.status(500).json({ message: 'Error al inscribir equipo en el torneo.' });
   }
-});
+});//Inscripcion de equipos en torneo
+
+router.post('/torneos/verificarInscripcion', verificarInscripcion);
+router.post('/torneos/inscribirEquipo', inscribirEquipoEnTorneo);
+
 
 //FECHA
 router.get('/fechas', getFechas)
@@ -194,9 +230,7 @@ router.get('/fixtures/detalle/:id', getFixture);
 
 
 
-router.get('/equipos/nombre/:nombre', getEquipoByName);
-router.post('/torneos/verificarInscripcion', verificarInscripcion);
-router.post('/torneos/inscribirEquipo', inscribirEquipoEnTorneo);
+
 
 
 

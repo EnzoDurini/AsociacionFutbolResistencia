@@ -1,119 +1,123 @@
 body{
-    background-color: rgb(93, 93, 100);
-     overflow-x: hidden;
-     overflow-y: hidden;
+  background-color: rgb(93, 93, 100);
+  overflow-x: hidden;
   
+}
+.juan{
+background-color: rgb(93, 93, 100);
+
+overflow-y: hidden;
+
 }
 
 html, body {
-  height: 100%; 
-  margin: 0;    
-  padding: 0;
+height: 100%; 
+margin: 0;    
+padding: 0;
 }
 
 /*Header*/
 .colornuevo {
-    background-color: rgb(3, 3, 3);
-    }
-  
-    .botoncabecera {
-      border: solid white 3px;
-    }
-    
-    .he {
-      padding: 3px;
-      margin: 3px;
-    }
-    
-    .he:hover {
-      background-color: white;
-      color: black;
-    }
-    
-    .he2 {
-      border: solid white 1px;
-    }
-    
-    .bhn {
-      border: solid black 2px;
-    }
-  
-  .ff{
-      display: flex;
-      justify-content: center;
-  }
-  
-  .styleButtonHead{
-    color: rgb(232, 235, 233);
-    background-color: rgb(48, 89, 79);
-    all: unset; 
-    display: inline-block; 
-    cursor: pointer; 
-  
+  background-color: rgb(3, 3, 3);
   }
 
-  .cabecera {
-    justify-content: center; 
-    background-color: transparent;
-    font-size: large;
-    color: rgb(232, 235, 233);
-    display: flex; 
-    text-align: center; 
-}
-
-
-  /* footer */
-  .footerText {
-    text-decoration: none;
-    background-color: rgb(3, 3, 3);
-    color: rgb(232, 235, 233);
-    text-align: center;
-    transition: all 0.5s;
+  .botoncabecera {
+    border: solid white 3px;
   }
   
-  .footerText:hover {
-    transform: scale(1.1);
-    color:rgb(232, 235, 233);
+  .he {
+    padding: 3px;
+    margin: 3px;
   }
   
-  footer {
-  
-    background-color: rgb(3, 3, 3);
-    color: rgb(232, 235, 233);
-    text-align: center;
-    margin-top: auto;
+  .he:hover {
+    background-color: white;
+    color: black;
   }
   
-  .links {
-    font-size: 30px;
-    justify-content: center;
+  .he2 {
+    border: solid white 1px;
   }
   
-  .pp {
-    font-size: 20px;
+  .bhn {
+    border: solid black 2px;
   }
 
-  .ppo {
-    font-size: 10px;
-  }
-
-  .wrapper {
-    min-height: 100%; 
+.ff{
     display: flex;
-    flex-direction: column; 
+    justify-content: center;
+}
+
+.styleButtonHead{
+  color: rgb(232, 235, 233);
+  background-color: rgb(48, 89, 79);
+  all: unset; 
+  display: inline-block; 
+  cursor: pointer; 
+
+}
+
+.cabecera {
+  justify-content: center; 
+  background-color: transparent;
+  font-size: large;
+  color: rgb(232, 235, 233);
+  display: flex; 
+  text-align: center; 
 }
 
 
- /* inscripcion */
+/* footer */
+.footerText {
+  text-decoration: none;
+  background-color: rgb(3, 3, 3);
+  color: rgb(232, 235, 233);
+  text-align: center;
+  transition: all 0.5s;
+}
 
- .btnDesign{
-  border-radius: 8px;
- }
+.footerText:hover {
+  transform: scale(1.1);
+  color:rgb(232, 235, 233);
+}
 
-/* .fontDesing{
-  color: rgb(0, 0, 0);
-} */
+footer {
+
+  background-color: rgb(3, 3, 3);
+  color: rgb(232, 235, 233);
+  text-align: center;
+  margin-top: auto;
+}
+
+.links {
+  font-size: 30px;
+  justify-content: center;
+}
+
+.pp {
+  font-size: 20px;
+}
+
+.ppo {
+  font-size: 10px;
+}
+
+.wrapper {
+  min-height: 100%; 
+  display: flex;
+  flex-direction: column; 
+}
+
+
+/* inscripcion */
+
+.btnDesign{
+border-radius: 8px;
+font-weight: bold
+}
+
+
 .fontDesing {
-  color: rgb(0, 0, 0);
-  font-weight: bold
+color: rgb(0, 0, 0);
+font-weight: bold
 }

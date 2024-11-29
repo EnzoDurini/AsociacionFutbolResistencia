@@ -104,3 +104,18 @@ export const deleteArbitro = async (req,res) => {
         res.status(500).send('Error al eliminar arbitro')        
     }
 };
+
+export const getArbitrosNombre = async (req,res) => {
+    try {
+        const pool = await getConnection()
+       const nombres =  await pool.request()
+        .query(`SELECT A.DNIFK, CONCAT(P.Nombre, ' ' ,P.Apellido) AS NombreArbitro
+            FROM Arbitro A
+            INNER JOIN Persona P ON A.DNIFK = P.DNI
+            `)
+        const arbitrosNombres = nombres.recordset
+        res.status(200).send(arbitrosNombres);
+    } catch (error) {
+        
+    }
+}

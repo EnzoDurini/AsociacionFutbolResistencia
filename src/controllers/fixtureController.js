@@ -117,26 +117,27 @@ export const getFixture = async (req, res) => {
     const detalles = await pool.request()
       .input('IdFixture', sql.Int, id)
       .query(`
-        SELECT 
-          P.IDPARTIDO, 
-          P.FechaHoraEncuentro, 
-          P.NombreCancha, 
-          P.UbicCancha, 
-          CONCAT(Pe.Nombre, ' ', Pe.Apellido) AS NombreArbitro, 
-          EL.NombreEquipo AS EquipoLocal, 
-          EV.NombreEquipo AS EquipoVisitante
-        FROM Partido P
-        LEFT JOIN Arbitro A ON P.DNIARBITROFK = A.DNIFK
-        LEFT JOIN Persona Pe ON A.DNIFK = Pe.DNI
-        LEFT JOIN Equipo EL ON P.IdEquipoLocal = EL.NROEQUIPO
-        LEFT JOIN Equipo EV ON P.IdEquipoVisitante = EV.NROEQUIPO
-        WHERE P.NroFechaFK IN (
-          SELECT F.IdFecha
-          FROM Fecha F
-          JOIN Rueda R ON F.IdRuedaFK = R.IdRueda
-          WHERE R.IdFixtureFK = @IdFixture
-        )
-      `);
+    SELECT
+      R.IdFixtureFK,
+      R.IdRueda,
+      R.NombreRueda,
+      F.NroFecha,
+      P.IDPARTIDO, 
+      P.FechaHoraEncuentro, 
+      P.NombreCancha, 
+      P.UbicCancha, 
+      CONCAT(Pe.Nombre, ' ', Pe.Apellido) AS NombreArbitro, 
+      EL.NombreEquipo AS EquipoLocal, 
+      EV.NombreEquipo AS EquipoVisitante
+    FROM Partido P
+    LEFT JOIN Arbitro A ON P.DNIARBITROFK = A.DNIFK
+    LEFT JOIN Persona Pe ON A.DNIFK = Pe.DNI
+    LEFT JOIN Equipo EL ON P.IdEquipoLocal = EL.NROEQUIPO
+    LEFT JOIN Equipo EV ON P.IdEquipoVisitante = EV.NROEQUIPO
+    LEFT JOIN Fecha F ON P.NroFechaFK = F.IdFecha
+    LEFT JOIN Rueda R ON F.IdRuedaFK = R.IdRueda
+    WHERE R.IdFixtureFK = @IdFixture;
+  `);
 
     // Obtener todos los árbitros disponibles
     const arbitros = await pool.request().query(`

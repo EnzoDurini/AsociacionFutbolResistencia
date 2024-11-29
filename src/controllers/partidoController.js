@@ -92,3 +92,26 @@ export const createupdatePartido = async (req, res) => {
       res.status(500).send('Error interno al actualizar el partido.');
     }
   };
+
+
+  export const getPartidos = async (req,res) => {
+    const pool = await getConnection()
+    const result = await pool.request()
+    const partidos = await pool.request().query(`
+      SELECT 
+        P.IDPARTIDO, 
+        P.FechaHoraEncuentro, 
+        P.NombreCancha, 
+        P.UbicCancha,
+        P.DNIARBITROFK,
+        EL.NombreEquipo AS EquipoLocal, 
+        EV.NombreEquipo AS EquipoVisitante,
+        CONCAT(PER.Nombre, ' ', PER.Apellido) AS NombreArbitro
+      FROM Partido P
+      LEFT JOIN Equipo EL ON P.IdEquipoLocal = EL.NROEQUIPO
+      LEFT JOIN Equipo EV ON P.IdEquipoVisitante = EV.NROEQUIPO
+      LEFT JOIN Arbitro A ON P.DNIARBITROFK = A.DNIARBITRO
+      LEFT JOIN Persona PER ON A.DNIFK = PER.DNI
+    `);
+
+  }
