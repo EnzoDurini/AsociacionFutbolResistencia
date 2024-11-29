@@ -40,7 +40,7 @@ export const createTorneo = async (req, res) => {
         VALUES (@NOMBRETORNEO, @FechaInicioTorneo, @FechaFinTorneo, @FechaInicioInscripcion, @FechaFinInscripcion, @DivisionFK, @CategoriaFK)
       `);
 
-    res.status(201).send('Torneo creado exitosamente.');
+    res.redirect('/torneo');
   } catch (error) {
     console.error('Error al crear torneo:', error.message);
     res.status(500).send('Error al crear torneo.');
