@@ -179,38 +179,45 @@ export const createupdatePartido = async (req, res) => {
     }
   };
 
-
   export const guardarResultadosEncuentro = async (req, res) => {
     try {
       const { idPartido, estadisticas } = req.body; // Recibir los datos enviados desde el frontend
       const pool = await getConnection();
   
-      console.log(req.body);
+      console.log("Datos recibidos:", req.body);
   
       // Guardar estadísticas de cada jugador en la tabla EquipoJugadorJuegaPartido
       for (const stats of estadisticas) {
-        const { dnifk, nrosociofk, faltas, goles, amarillas, expulsado } = stats;
+        const { dnifk, faltas, goles, amarillas, expulsado } = stats;
   
-        // Obtener el IdEquipoFK basado en dnifk
+        // Validar los datos del jugador
+        if (!dnifk) {
+          console.error(`Jugador sin DNIFK proporcionado: ${JSON.stringify(stats)}`);
+          continue;
+        }
+  
+        // Obtener el IdEquipoFK y NroJugador basado en DNIFK
         const equipoQuery = await pool.request()
           .input('DNIFK', sql.Int, dnifk)
           .query(`
-            SELECT NROEQUIPOFK 
+            SELECT NROEQUIPOFK, NROSOCIO
             FROM Jugador 
             WHERE DNIFK = @DNIFK
           `);
   
         const idEquipoFK = equipoQuery.recordset[0]?.NROEQUIPOFK;
+        const nroJugador = equipoQuery.recordset[0]?.NROSOCIO;
   
-        if (!idEquipoFK) {
-          console.error(`Jugador con DNIFK ${dnifk} no tiene asignado un equipo.`);
-          continue; // Saltar si no se encuentra el equipo
+        if (!idEquipoFK || !nroJugador) {
+          console.error(`Jugador con DNIFK ${dnifk} no tiene asignado un equipo o NroJugador.`);
+          continue; // Saltar si no se encuentran los datos
         }
   
+        // Guardar estadísticas si hay algún dato válido
         if (faltas > 0 || goles > 0 || amarillas > 0 || expulsado > 0) {
           await pool.request()
             .input('DNIFK', sql.Int, dnifk)
-            .input('NroSocioFK', sql.Int, nrosociofk)
+            .input('NroJugador', sql.Int, nroJugador) // Incluyendo NroJugador
             .input('IdEquipoFK', sql.Int, idEquipoFK)
             .input('IdPartidoFK', sql.Int, idPartido)
             .input('FaltasCometidas', sql.Int, faltas || 0)
@@ -219,13 +226,13 @@ export const createupdatePartido = async (req, res) => {
             .input('Expulsion', sql.Bit, expulsado || 0)
             .query(`
               INSERT INTO EquipoJugadorJuegaPartido (DNIFK, NroSocioFK, IdEquipoFK, IdPartidoFK, FaltasCometidas, Goles, TarjAmarilla, Expulsion)
-              VALUES (@DNIFK, @NroSocioFK, @IdEquipoFK, @IdPartidoFK, @FaltasCometidas, @Goles, @TarjAmarilla, @Expulsion)
+              VALUES (@DNIFK, @NroJugador, @IdEquipoFK, @IdPartidoFK, @FaltasCometidas, @Goles, @TarjAmarilla, @Expulsion)
             `);
         }
       }
   
       // Obtener los equipos involucrados en el partido
-      const equipos = await pool.request()
+      const equiposQuery = await pool.request()
         .input('IdPartido', sql.Int, idPartido)
         .query(`
           SELECT IdEquipoLocal, IdEquipoVisitante
@@ -233,51 +240,62 @@ export const createupdatePartido = async (req, res) => {
           WHERE IDPARTIDO = @IdPartido
         `);
   
-      const { IdEquipoLocal, IdEquipoVisitante } = equipos.recordset[0];
+      const { IdEquipoLocal, IdEquipoVisitante } = equiposQuery.recordset[0];
   
-      // Sumar goles de jugadores del equipo local
-      const golesLocalQuery = await pool.request()
-        .input('IdEquipoLocal', sql.Int, IdEquipoLocal)
-        .input('IdPartidoFK', sql.Int, idPartido)
-        .query(`
-          SELECT SUM(Goles) AS TotalGoles
-          FROM EquipoJugadorJuegaPartido
-          WHERE IdEquipoFK = @IdEquipoLocal AND IdPartidoFK = @IdPartidoFK
-        `);
-      const totalGolesLocal = golesLocalQuery.recordset[0].TotalGoles || 0;
+      // Calcular los goles del equipo local y visitante
+      const calcularGoles = async (idEquipo) => {
+        const query = await pool.request()
+          .input('IdEquipo', sql.Int, idEquipo)
+          .input('IdPartidoFK', sql.Int, idPartido)
+          .query(`
+            SELECT SUM(Goles) AS TotalGoles
+            FROM EquipoJugadorJuegaPartido
+            WHERE IdEquipoFK = @IdEquipo AND IdPartidoFK = @IdPartidoFK
+          `);
+        return query.recordset[0].TotalGoles || 0;
+      };
   
-      // Actualizar goles en la tabla EquipoDisputaPartido para el equipo local
-      await pool.request()
-        .input('NroEquipoFK', sql.Int, IdEquipoLocal)
-        .input('IdPartidoFK', sql.Int, idPartido)
-        .input('Resultado', sql.Int, totalGolesLocal)
-        .query(`
-          UPDATE EquipoDisputaPartido
-          SET Resultado = @Resultado
-          WHERE NroEquipoFK = @NroEquipoFK AND IdPartidoFK = @IdPartidoFK
-        `);
+      const totalGolesLocal = await calcularGoles(IdEquipoLocal);
+      const totalGolesVisitante = await calcularGoles(IdEquipoVisitante);
   
-      // Sumar goles de jugadores del equipo visitante
-      const golesVisitanteQuery = await pool.request()
-        .input('IdEquipoVisitante', sql.Int, IdEquipoVisitante)
-        .input('IdPartidoFK', sql.Int, idPartido)
-        .query(`
-          SELECT SUM(Goles) AS TotalGoles
-          FROM EquipoJugadorJuegaPartido
-          WHERE IdEquipoFK = @IdEquipoVisitante AND IdPartidoFK = @IdPartidoFK
-        `);
-      const totalGolesVisitante = golesVisitanteQuery.recordset[0].TotalGoles || 0;
+      // Guardar resultados en EquipoDisputaPartido
+      const guardarResultadoEquipo = async (idEquipo, goles) => {
+        const existe = await pool.request()
+          .input('NroEquipoFK', sql.Int, idEquipo)
+          .input('IdPartidoFK', sql.Int, idPartido)
+          .query(`
+            SELECT COUNT(*) AS Conteo
+            FROM EquipoDisputaPartido
+            WHERE NroEquipoFK = @NroEquipoFK AND IdPartidoFK = @IdPartidoFK
+          `);
   
-      // Actualizar goles en la tabla EquipoDisputaPartido para el equipo visitante
-      await pool.request()
-        .input('NroEquipoFK', sql.Int, IdEquipoVisitante)
-        .input('IdPartidoFK', sql.Int, idPartido)
-        .input('Resultado', sql.Int, totalGolesVisitante)
-        .query(`
-          UPDATE EquipoDisputaPartido
-          SET Resultado = @Resultado
-          WHERE NroEquipoFK = @NroEquipoFK AND IdPartidoFK = @IdPartidoFK
-        `);
+        if (existe.recordset[0].Conteo > 0) {
+          // Actualizar si ya existe
+          await pool.request()
+            .input('NroEquipoFK', sql.Int, idEquipo)
+            .input('IdPartidoFK', sql.Int, idPartido)
+            .input('Resultado', sql.Int, goles)
+            .query(`
+              UPDATE EquipoDisputaPartido
+              SET Resultado = @Resultado
+              WHERE NroEquipoFK = @NroEquipoFK AND IdPartidoFK = @IdPartidoFK
+            `);
+        } else {
+          // Insertar si no existe
+          await pool.request()
+            .input('NroEquipoFK', sql.Int, idEquipo)
+            .input('IdPartidoFK', sql.Int, idPartido)
+            .input('Resultado', sql.Int, goles)
+            .input('Asistio', sql.Bit, 1) // Asistió
+            .query(`
+              INSERT INTO EquipoDisputaPartido (NroEquipoFK, IdPartidoFK, Resultado, Asistio)
+              VALUES (@NroEquipoFK, @IdPartidoFK, @Resultado, @Asistio)
+            `);
+        }
+      };
+  
+      await guardarResultadoEquipo(IdEquipoLocal, totalGolesLocal);
+      await guardarResultadoEquipo(IdEquipoVisitante, totalGolesVisitante);
   
       res.status(200).send('Estadísticas guardadas y resultados actualizados.');
     } catch (error) {
@@ -285,6 +303,8 @@ export const createupdatePartido = async (req, res) => {
       res.status(500).send('Error interno al guardar los resultados del encuentro.');
     }
   };
+  
+  
   
   export const marcarAusencia = async (req, res) => {
     try {

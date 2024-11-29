@@ -9,6 +9,7 @@ import { createRueda, deleteRueda, getRuedas, updateRueda} from '../controllers/
 import { createTorneo, getTorneos, updateTorneo, deleteTorneo, getTorneosPorCategoriaYDivision } from '../controllers/torneoController.js';
 import { generateFixture, getFixture, renderFixturePage} from '../controllers/fixtureController.js';
 import { getEquipoByName, verificarInscripcion, inscribirEquipoEnTorneo} from '../controllers/equipoParticipaTorneoController.js';
+import { getResultados } from '../controllers/resultadosController.js';
 
 import { getConnection } from '../controllers/dbController.js';
 
@@ -97,9 +98,6 @@ LEFT JOIN Torneo T ON Fi.IdTorneoFK = T.IDTORNEO
 
 
 
-router.get('/resultados', (req, res) => {
-  res.render('resultados');
-});
 
 //EQUIPO
 router.get('/equipos', getEquipos)
@@ -236,16 +234,6 @@ router.get('/fixture', renderFixturePage);
 router.post('/fixtures/generate', generateFixture);
 router.get('/fixtures/detalle/:id', getFixture);
 
-
-
-
-
-
-
-
-
-
-
-
+router.get('/resultados', getResultados);
 
 export default router;

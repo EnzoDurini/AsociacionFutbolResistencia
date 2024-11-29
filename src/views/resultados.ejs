@@ -58,14 +58,62 @@
 
 
 
-        <h1>Bienvenido a la Asociación de Fútbol</h1>
-        <form action="/equipos" method="POST">
-            <label>Nombre del equipo:</label>
-            <input type="text" name="nombre" required>
-            <label>Director Técnico:</label>
-            <input type="text" name="directorTecnico" required>
-            <button type="submit">Registrar Equipo</button>
-        </form>
+       <main>
+        <div class="container mt-5">
+            <h1 class="text-center">Tabla de Posiciones</h1>
+        
+            <!-- Formulario para seleccionar torneo -->
+            <form method="GET" action="/resultados" class="mb-4">
+              <label for="torneoId" class="form-label">Seleccione un Torneo:</label>
+              <select id="torneoId" name="torneoId" class="form-select" onchange="this.form.submit()">
+                <option value="">-- Seleccione un torneo --</option>
+                <% torneos.forEach(torneo => { %>
+                  <option value="<%= torneo.IDTORNEO %>" <%= torneo.IDTORNEO == torneoId ? 'selected' : '' %>>
+                    <%= torneo.NOMBRETORNEO %>
+                  </option>
+                <% }); %>
+              </select>
+            </form>
+        
+            <!-- Mostrar la tabla solo si hay un torneo seleccionado -->
+            <% if (torneoId) { %>
+              <table class="table table-bordered table-striped">
+                <thead class="table-dark">
+                  <tr>
+                    <th>Equipo</th>
+                    <th>PJ</th>
+                    <th>PG</th>
+                    <th>PE</th>
+                    <th>PP</th>
+                    <th>GF</th>
+                    <th>GC</th>
+                    <th>PTS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% if (resultados.length > 0) { %>
+                    <% resultados.forEach(resultado => { %>
+                      <tr>
+                        <td><%= resultado.Equipo %></td>
+                        <td><%= resultado.PJ %></td>
+                        <td><%= resultado.PG %></td>
+                        <td><%= resultado.PE %></td>
+                        <td><%= resultado.PP %></td>
+                        <td><%= resultado.GF %></td>
+                        <td><%= resultado.GC %></td>
+                        <td><%= resultado.PTS %></td>
+                      </tr>
+                    <% }); %>
+                  <% } else { %>
+                    <tr>
+                      <td colspan="8" class="text-center">No hay datos disponibles para este torneo.</td>
+                    </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            <% } %>
+          </div>
+       </main>
 
 
         <footer class="container-fluid">

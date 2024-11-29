@@ -58,85 +58,88 @@
   
   
   
-         <main>
+          <main>
             <h1>Detalles del Encuentro</h1>
             <h2>Partido: <%= encuentro.EquipoLocal %> vs <%= encuentro.EquipoVisitante %></h2>
-            
+
             <!-- Tabla para jugadores del equipo local -->
             <h3>
                 Equipo Local: <%= encuentro.EquipoLocal %>
                 <button class="btn btn-danger btn-sm" onclick="marcarAusencia('<%= encuentro.EquipoLocalID %>', '<%= encuentro.IDPARTIDO %>')">
                     Se Ausentó
-                  </button>
-              </h3>
+                </button>
+            </h3>
             <table class="table">
-              <thead>
-                <tr>
-                  <th>Nro Socio</th>
-                  <th>Jugador</th>
-                  <th>Faltas</th>
-                  <th>Goles</th>
-                  <th>Amarillas</th>
-                  <th>Expulsado</th>
-                </tr>
-              </thead>
-              <tbody>
-                <% jugadores.filter(j => j.Equipo === 'Local').forEach(jugador => { %>
-                  <tr>
-                    <td><%= jugador.NROSOCIO %></td>
-                    <td><%= jugador.Nombre %> <%= jugador.Apellido %></td>
-                    <td><input type="number" class="form-control" id="faltas-<%= jugador.DNIFK %>" /></td>
-                    <td><input type="number" class="form-control" id="goles-<%= jugador.DNIFK %>" /></td>
-                    <td><input type="number" class="form-control" id="amarillas-<%= jugador.DNIFK %>" /></td>
-                    <td>
-                      <select class="form-control" id="expulsado-<%= jugador.DNIFK %>">
-                        <option value="No">No</option>
-                        <option value="Si">Sí</option>
-                      </select>
-                    </td>
-                  </tr>
-                <% }); %>
-              </tbody>
+                <thead>
+                    <tr>
+                        <th>Nro Socio</th>
+                        <th>Jugador</th>
+                        <th>Faltas</th>
+                        <th>Goles</th>
+                        <th>Amarillas</th>
+                        <th>Expulsado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% jugadores.filter(j => j.Equipo === 'Local').forEach(jugador => { %>
+                    <tr data-dnifk="<%= jugador.DNIFK %>">
+                        <td><%= jugador.NROSOCIO %></td>
+                        <td><%= jugador.Nombre %> <%= jugador.Apellido %></td>
+                        <td><input type="number" class="form-control" id="faltas-<%= jugador.DNIFK %>" /></td>
+                        <td><input type="number" class="form-control" id="goles-<%= jugador.DNIFK %>" /></td>
+                        <td><input type="number" class="form-control" id="amarillas-<%= jugador.DNIFK %>" /></td>
+                        <td>
+                            <select class="form-control" id="expulsado-<%= jugador.DNIFK %>">
+                                <option value="No">No</option>
+                                <option value="Si">Sí</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <% }); %>
+                </tbody>
             </table>
-            
+
             <!-- Tabla para jugadores del equipo visitante -->
             <h3>
                 Equipo Visitante: <%= encuentro.EquipoVisitante %>
                 <button class="btn btn-danger btn-sm" onclick="marcarAusencia('<%= encuentro.EquipoVisitanteID %>', '<%= encuentro.IDPARTIDO %>')">
-                  Se Ausentó
+                    Se Ausentó
                 </button>
-              </h3>
+            </h3>
             <table class="table">
-              <thead>
-                <tr>
-                  <th>Nro Socio</th>
-                  <th>Jugador</th>
-                  <th>Faltas</th>
-                  <th>Goles</th>
-                  <th>Amarillas</th>
-                  <th>Expulsado</th>
-                </tr>
-              </thead>
-              <tbody>
-                <% jugadores.filter(j => j.Equipo === 'Visitante').forEach(jugador => { %>
-                  <tr>
-                    <td><%= jugador.NROSOCIO %></td>
-                    <td><%= jugador.Nombre %> <%= jugador.Apellido %></td>
-                    <td><input type="number" class="form-control" id="faltas-<%= jugador.DNIFK %>" /></td>
-                    <td><input type="number" class="form-control" id="goles-<%= jugador.DNIFK %>" /></td>
-                    <td><input type="number" class="form-control" id="amarillas-<%= jugador.DNIFK %>" /></td>
-                    <td>
-                      <select class="form-control" id="expulsado-<%= jugador.DNIFK %>">
-                        <option value="No">No</option>
-                        <option value="Si">Sí</option>
-                      </select>
-                    </td>
-                  </tr>
-                <% }); %>
-              </tbody>
+                <thead>
+                    <tr>
+                        <th>Nro Socio</th>
+                        <th>Jugador</th>
+                        <th>Faltas</th>
+                        <th>Goles</th>
+                        <th>Amarillas</th>
+                        <th>Expulsado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% jugadores.filter(j => j.Equipo === 'Visitante').forEach(jugador => { %>
+                    <tr data-dnifk="<%= jugador.DNIFK %>">
+                        <td><%= jugador.NROSOCIO %></td>
+                        <td><%= jugador.Nombre %> <%= jugador.Apellido %></td>
+                        <td><input type="number" class="form-control" id="faltas-<%= jugador.DNIFK %>" /></td>
+                        <td><input type="number" class="form-control" id="goles-<%= jugador.DNIFK %>" /></td>
+                        <td><input type="number" class="form-control" id="amarillas-<%= jugador.DNIFK %>" /></td>
+                        <td>
+                            <select class="form-control" id="expulsado-<%= jugador.DNIFK %>">
+                                <option value="No">No</option>
+                                <option value="Si">Sí</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <% }); %>
+                </tbody>
             </table>
 
-         </main>
+            <button class="btn btn-primary btn-lg mt-3" onclick="guardarEstadisticas(<%= encuentro.IDPARTIDO %>)">
+                Guardar Estadísticas
+            </button>
+        </main>
   
   
           <footer class="container-fluid">
@@ -198,6 +201,31 @@
     alert('Error interno al marcar ausencia.');
   }
 }
+
+async function guardarEstadisticas(idPartido) {
+        const estadisticas = [];
+        const mensajeCarga = document.getElementById('mensaje-carga');
+       
+
+        document.querySelectorAll("table tbody tr").forEach(row => {
+            const dnifk = row.getAttribute('data-dnifk');
+            const faltas = parseInt(row.querySelector(`#faltas-${dnifk}`).value) || 0;
+            const goles = parseInt(row.querySelector(`#goles-${dnifk}`).value) || 0;
+            const amarillas = parseInt(row.querySelector(`#amarillas-${dnifk}`).value) || 0;
+            const expulsado = row.querySelector(`#expulsado-${dnifk}`).value === 'Si' ? 1 : 0;
+
+            if (dnifk) { // Validación de datos
+                estadisticas.push({ dnifk, faltas, goles, amarillas, expulsado });
+            }
+        });
+
+        try {
+            const response = await fetch('/encuentro/guardar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ idPartido, estadisticas })
+            });
+    }
 
   </script>
 
